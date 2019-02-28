@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+	<script src="/jquery/dist/jquery.min.js"></script>
+	<script src="/popper.js/dist/popper.min.js"></script>
+	<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+	{{#unless login}}
+	<link rel="stylesheet" href="/styles/wrapper.css">
+	{{/unless}}
+	<title>ОРПСВТ База</title>
+
+</head>
+
+<body id="page-top">
+	{{#unless login}}
+	<!-- HEADER -->
+	<header>
+		<nav class="navbar navbar-expand-lg navbar-static-top navbar-dark" role="navigation">
+			<a class="navbar-brand mx-1 text-center font-weight-bold" href="/">На главную
+			</a>
+
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+			 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<div class="nav-item dropdown ml-md-auto">
+					<a class="nav-item nav-flex dropdown-toggle mr-md-2 text-light h6" href="#" id="dropdownMenuButton" data-toggle="dropdown"
+					 aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-user-circle fa-fw fa-lg" aria-hidden="true"></i>
+						<strong>{{user.fullname}}</strong>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+						<a class="dropdown-item" href="#">
+							<i class="fa fa-user fa-fw text-black-50"></i>
+							Профиль
+						</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="/settings">
+							<i class="fa fa-gear fa-fw text-black-50"></i>
+							Настройки
+						</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="/logout">
+							<i class="fa fa-sign-out fa-fw text-black-50"></i>
+							Выйти
+						</a>
+					</div>
+				</div>
+			</div>
+		</nav>
+	</header>
+
+	<div id="wrapper">
+		<!-- Sidebar -->
+		<ul class="sidebar nav-tabs list-group" id="sidebar-panel" role="tablist">
+			<li class="nav-item">
+				<a href="/docs/new" class="list-group-item list-group-item-action" id="list-home-list" role="tab" aria-controls="addRecord">
+					<i class="fa fa-pencil fa-lg fa-fw" aria-hidden="true"></i>
+					<span>Новая запись</span>
+				</a>
+			</li>
+			<li class="nav-item">
+				<a href="#" class="list-group-item list-group-item-action" id="list-profile-list" role="tab" aria-controls="search">
+					<i class="fa fa-search fa-lg fa-fw" aria-hidden="true"></i>
+					<span>Поиск</span>
+				</a>
+			</li>
+			<li class="nav-item">
+				<a href="#" class="list-group-item list-group-item-action" id="list-messages-list" role="tab" aria-controls="statistic">
+					<i class="fa fa-bar-chart fa-lg fa-fw" aria-hidden="true"></i>
+					<span>Статистика</span>
+				</a>
+			</li>
+		</ul>
+		{{!-- {{/unless}} --}}
+
+		<div id="content-wrapper">
+			{{/unless}}
+
+			<div class="container-fluid">
+
+				{{#if message}}
+				<div class="row">&nbsp;</div>
+				{{#if messageType}}
+				<div class="panel panel-{{messageType}}">
+					{{else}}
+					<div class="panel panel-red">
+						{{/if}}
+						<div class="panel-heading">
+							<div class="row">
+								<div class="col-md-4">
+									<i class="fa fa-comments fa-3x"></i>
+								</div>
+								<div class="col-md-8">
+									<div>{{message}}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				{{/if}}
+
+				{{{ body }}}
+
+			</div>
+
+			{{#unless login}}
+			<!-- Sticky Footer -->
+			<footer class="sticky-footer">
+				<div class="container my-auto">
+					<div class="copyright text-center my-auto">
+						<span>База данных ОРПСВТ, 2019</span>
+					</div>
+				</div>
+			</footer>
+
+		</div>
+	</div>
+	{{/unless}}
+
+	<script>
+		$('#sidebar-panel a').on('click', function (e) {
+			$(this).tab('show');
+
+		})
+	</script>
+</body>
+
+</html>

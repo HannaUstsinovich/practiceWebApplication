@@ -1,0 +1,32 @@
+<main role="main">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">
+		<div class="col-md-9 order-md-1">
+			<h4 class="mb-3">Настройки пользователя</h4>
+			<div class="row settings-options">
+				{{#if canAddUsers}}
+				<div class="col-md-12 mb-4">
+					<a href="/settings/user/add" class="text-primary" name="add-user">
+						<i class="fa fa-user-o fa-fw fa-lg" aria-hidden="true"></i>
+						<strong class="h5">Добавить пользователя</strong>
+					</a>
+				</div>
+				{{/if}}
+				{{#if canEditUsers}}
+				<div class="col-md-12 mb-4">
+					<a href="/settings/users/list" class="text-primary" name="edit-users">
+						<i class="fa fa-list fa-fw fa-lg" aria-hidden="true"></i>
+						<strong class="h5">Редактировать пользователей</strong>
+					</a>
+				</div>
+				{{/if}}
+				<div class="col-md-12 mb-4">
+					<a href="#" class="text-primary" name="change-password">
+						<i class="fa fa-eye fa-fw fa-lg" aria-hidden="true"></i>
+						<strong class="h5">Сменить пароль</strong>
+					</a>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
