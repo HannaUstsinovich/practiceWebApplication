@@ -19,133 +19,139 @@ os.tmpDir = os.tmpdir;
 var formidable = require('formidable');
 
 router.all('*', function (req, res, next) {
-    if (!req.isAuthenticated()) {
-        res.redirect('/');
-    }
-    next();
+	if (!req.isAuthenticated()) {
+		res.redirect('/');
+	}
+	next();
 });
 
 // Добавление документа
 router.post('/new', function (req, res) {
-    cache.flushAll();
+	cache.flushAll();
 	var form = new formidable.IncomingForm();
-	
-    form.multiples = true;
 
-    var properfields = {};
+	form.multiples = true;
 
-    form.on('field', function (name, value) {
-		console.log('on field');
-        if (!properfields[name]) {
-            properfields[name] = value;
-        } else {
-            if (properfields[name].constructor.toString().indexOf("Array") > -1) { // is array
-                properfields[name].push(value);
-            } else { // not array
-                var tmp = properfields[name];
-                properfields[name] = [];
-                properfields[name].push(tmp);
-                properfields[name].push(value);
-            }
-        }
-    });
+	var properfields = {};
 
-    form.parse(req, function (err, fields, files) {
-            fields = properfields;
+	form.on('field', function (name, value) {
+		// console.log('on field');
+		if (!properfields[name]) {
+			properfields[name] = value;
+		} else {
+			if (properfields[name].constructor.toString().indexOf("Array") > -1) { // is array
+				properfields[name].push(value);
+			} else { // not array
+				var tmp = properfields[name];
+				properfields[name] = [];
+				properfields[name].push(tmp);
+				properfields[name].push(value);
+			}
+		}
+	});
 
-            DEBUG_CLIENT(req.user.id, "Добавил документ");
+	form.parse(req, function (err, fields, files) {
+		fields = properfields;
 
-            saveDoc(fields, req, res, function (savedDocParams) {
-                if (savedDocParams.success) {
+		DEBUG_CLIENT(req.user.id, "Добавил документ");
 
-                    // if (files.files.length == undefined) {
-                    //     files = {files: [files.files]};
-					// }
-					
-                    for (var key in files.files) {
-                        saveDocFile(files.files[key], savedDocParams.doc_id);
-                    }
-                }
-                res.render('docs/saved_record', savedDocParams);
-                return;
-            });
-        }
-    );
+		saveDoc(fields, req, res, function (savedDocParams) {
+			if (savedDocParams.success) {
+
+				// if (files.files.length == undefined) {
+				//     files = {files: [files.files]};
+				// }
+
+				for (var key in files.files) {
+					saveDocFile(files.files[key], savedDocParams.record_id);
+				}
+			}
+			res.render('docs/saved_record', savedDocParams);
+			return;
+		});
+	}
+	);
 })
 
 
 router.get('/new/', function (req, res) {
-    renderForm(req, res);
+	renderForm(req, res);
 })
 
 
 var renderForm = function (req, res) {
-    if (!user.can(req.user.admin, "add_doc")) {
-        res.sendStatus(403);
-        return;
-    }
+	if (!user.can(req.user.admin, "add_doc")) {
+		res.sendStatus(403);
+		return;
+	}
 
-	 var pathDocHelp = req.params.doc + '.txt';
+	var pathDocHelp = req.params.doc + '.txt';
 
-    fs.readFile(pathDocHelp, function (err, content) {
+	fs.readFile(pathDocHelp, function (err, content) {
 
-        if (err) {
-            DEBUG(err);
-        }
-        var params = req.params;
+		if (err) {
+			DEBUG(err);
+		}
+		var params = req.params;
 
-        params.docContent = content;
-        params.user = req.user;
+		params.docContent = content;
+		params.user = req.user;
 		params.doc = req.params.doc;
-		
-        res.render('docs/add_record', params)
-    });
+
+		res.render('docs/add_record', params)
+	});
 }
 
 var formatDate = function (date) {
-    if (!date) {
-        return false;
-    }
+	if (!date) {
+		return false;
+	}
 
-    var arr = date.split(".");
-    return [arr[2], arr[1], arr[0]].join(".");
+	var arr = date.split(".");
+	return [arr[2], arr[1], arr[0]].join(".");
 }
 
 //Сохранение документа
 var saveDoc = function (fields, req, res, callback) {
+	
+	fields.user_id = req.user.id;
+	fields.date = formatDate(fields.date);
 
-    fields.user_id = req.user.id;
-    fields.date = formatDate(fields.date);
+	model.createDoc(fields, function (rows) {
 
-    model.createDoc(fields, function (rows) {
+		var params = {
+			user: req.user,
+		}
 
-        var params = {
-            user: req.user,
-        }
+		if (rows === false) {
+			params.error = true;
+			params.message = "Ошибка во время сохранения, документ уже существует";
+			res.render('docs/saved_record', params);
+			return;
+		}
 
-        if (rows === false) {
-            params.error = true;
-            params.message = "Ошибка во время сохранения, документ уже существует";
-            res.render('docs/saved_record', params);
-            return;
-        }
-
-		var docId = rows.insertId;
+		var recordId = rows.insertId;
 		var userId = req.user.id;
 
-        params.doc_id = docId;
-        if (rows.affectedRows == 1) {
-            params.success = true;
-            params.message = "Документ сохранен успешно";
-            params.messageType = "primary";
-        }
-        else {
-            params.success = false;
-            params.message = "Ошибка во время сохранения";
-        }
+		params.record_id = recordId;
 
-        callback(params);
-    })
+		//Блок для добавления идентификатора
+		fields.record_id = recordId;
+		if (fields.feature != undefined)
+			model.addIdentifier(fields);
+
+		if (rows.affectedRows == 1) {
+			params.success = true;
+			params.message = "Документ сохранен успешно";
+			params.messageType = "primary";
+		}
+		else {
+			params.success = false;
+			params.message = "Ошибка во время сохранения";
+		}
+
+		callback(params);
+	})
 }
 
 //ВСЕ ДОКУМЕНТЫ ВООБЩЕ
@@ -209,11 +215,11 @@ var saveDoc = function (fields, req, res, callback) {
 
 // function displayDocsByIds(req, res, cleanIdsSource, errorIdsSource) {
 //     var unitedIds = [];
-//     cleanIdsSource.forEach(function (docId) {
-//         unitedIds.push({type: "clean", id: docId})
+//     cleanIdsSource.forEach(function (recordId) {
+//         unitedIds.push({type: "clean", id: recordId})
 //     })
-//     errorIdsSource.forEach(function (docId) {
-//         unitedIds.push({type: "error", id: docId})
+//     errorIdsSource.forEach(function (recordId) {
+//         unitedIds.push({type: "error", id: recordId})
 //     })
 
 //     var cleanIdsParam = [];

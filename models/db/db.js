@@ -128,6 +128,7 @@ module.exports = {
 		this.query(query).then(function (data) {
 			callback(data)
 		});
+
 		// });
 
 	},
@@ -141,9 +142,9 @@ module.exports = {
 
 	 //В разработке...
 	addIdentifier: function (fields) {
-		this.filter(fields);
+		// this.filter(fields);
 
-		var query = "INSERTO INTO `identifiers` " +
+		var query = "INSERT INTO `identifiers` " +
 			"(`feature`, " +
 			"`identifier`, " +
 			"`remark`, " +
@@ -158,9 +159,8 @@ module.exports = {
 			fields.record_id +
 			");";
 
-		this.query(query).then(function (data) {
-			callback(data)
-		});
+		// console.log(query.toString());
+		this.query(query);
 	},
 
 	/**

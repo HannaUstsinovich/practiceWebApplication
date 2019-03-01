@@ -3,11 +3,11 @@ $(function () {
 
 	// ОБРАБОТКА ФРЕЙМА "Срок рассмотрения материала"
 	var dateField1 = $('<div class="input-group input-group-sm col-md-3 mb-2">')
-		.append('<input type="date" class="form-control period" id="dateField1" name="phase_date">');
+		.append('<input type="date" class="form-control period" id="dateField1" name="phase_date" required>');
 	var dateField2 = $('<div class="input-group input-group-sm col-md-3 mb-2">')
-		.append('<input type="date" class="form-control period" id="dateField2" name="phase_date">');
+		.append('<input type="date" class="form-control period" id="dateField2" name="phase_date" required>');
 	var dateField3 = $('<div class="input-group input-group-sm col-md-3 mb-2">')
-		.append('<input type="date" class="form-control period" id="dateField3" name="phase_date">');
+		.append('<input type="date" class="form-control period" id="dateField3" name="phase_date" required>');
 
 	var dateFieldArray = [dateField1, dateField2, dateField3];
 	var phaseID = ["phaseExtended", "phaseSuspended", "phaseRenewed"];
@@ -90,7 +90,8 @@ $(function () {
 			'class': 'form-control',
 			'name': 'remark',
 			'placeholder': 'Примечание',
-			'area-label': 'Примечание'
+			'area-label': 'Примечание',
+			'value': ""
 		}).appendTo(col);
 
 		col = $('<div/>').addClass("col-md-2").appendTo(row);
