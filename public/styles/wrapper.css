@@ -57,8 +57,9 @@ input[type=number]::-webkit-inner-spin-button {
 .nav-tabs > li > a.active:hover,
 .nav-tabs > li > a.active:focus{
 	/* background-color: #1976D2; #78909C   */
-	background-color: #00B8D4;
-	border-color: #00B8D4;
+	background-color: #0097A7;
+	border-color: #0097A7;
+	/* border-color: #00B8D4; */
 } 
 
  footer.sticky-footer {
@@ -70,7 +71,8 @@ input[type=number]::-webkit-inner-spin-button {
 	bottom: 0;
 	width: calc(100% - 90px);
 	height: 70px;
-	background-color: rgb(207, 217, 223);
+	background-color: #006064;
+	/* background-color: rgb(217, 224, 230); */
 	/* background-color: #e0f7fa; */
 	/* background-color: #b2dfbd; */
 	/* background-color: #BBDEFB; */
@@ -79,8 +81,9 @@ input[type=number]::-webkit-inner-spin-button {
   
   footer.sticky-footer .copyright {
 	line-height: 1;
-	font-size: 1.1rem;
-	color:#414141;
+	font-size: 1.2rem;
+	color: #e0dfdf;
+	/* color:#414141; */
 	/* font-weight: bold; */
   }
 

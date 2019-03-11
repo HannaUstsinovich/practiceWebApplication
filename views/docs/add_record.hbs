@@ -2,18 +2,18 @@
 	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">
 		<div class="col-md-9 order-md-1">
 			<h4 class="mb-4">Добавление новой записи</h4>
-			<form role="form" method="POST" data-disable=true id="inputForm" action="/docs/new/" enctype="multipart/form-data">
+			<form role="form" id="inputForm">
 				<div class="form-group row">
 					<div class="col-md-6 mb-3">
 						<label for="firstName">Сотрудник</label>
 						<input type="text" class="form-control" id="firstName" name="employee" placeholder="ФИО сотрудника" value="{{user.fullname}}"
-						 required>
+						 required readonly>
 					</div>
 					<div class="col-md-6 mb-3">
-						<label for="service">Служба</label>
+						<label for="service">Орган внутренних дел</label>
 						<select class="form-control" id="service" name="service" required>
-							<option value="">Выбор службы...</option>
-							<option>Служба1</option>
+							<option value="">Выбор ОВД...</option>
+							<option>Брестский ОВДТ</option>
 							<option>Служба2</option>
 							<option>Служба3</option>
 							<option>Служба4</option>
@@ -53,34 +53,20 @@
 				</div>
 
 				<hr class="mb-4">
-				<h4 class="mb-4">Срок рассмотрения материала:
+				<h4 class="mb-3">Срок рассмотрения материала:
 					<small class="deadline text-muted" name="deadline" readonly></small>
 				</h4>
 
-				<div class="form-group row termExtended">
-					<div class="col-md-3 mb-3">
-						<div class="custom-control custom-radio">
-							<input class="custom-control-input" id="phaseRadio1" name="phase" value="Продлен" type="radio">
-							<label class="custom-control-label px-1" id="phaseExtended" for="phaseRadio1">Продлен</label>
-						</div>
+				<div class="form-group row">
+					<div class="col-md-8 mb-3">
+						<label for="phase">Состояние</label>
+						<select class="custom-select d-md-block" id="phase" name="phase">
+							<option value="">Выберите состояние...</option>
+						</select>
 					</div>
-				</div>
-
-				<div class="form-group row termSuspended">
-					<div class="col-md-3 mb-3">
-						<div class="custom-control custom-radio">
-							<input class="custom-control-input" id="phaseRadio2" name="phase" value="Приостановлен" type="radio">
-							<label class="custom-control-label px-1" id="phaseSuspended" for="phaseRadio2">Приостановлен</label>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-group row termRenewed">
-					<div class="col-md-3 mb-3">
-						<div class="custom-control custom-radio">
-							<input class="custom-control-input" id="phaseRadio3" name="phase" value="Возобновлен" type="radio">
-							<label class="custom-control-label px-1" id="phaseRenewed" for="phaseRadio3">Возобновлен</label>
-						</div>
+					<div class="col-md-4 mb-3">
+						<label for="phase_date">Дата</label>
+						<input type="date" class="form-control" id="phase_date" name="phase_date" placeholder="" disabled>
 					</div>
 				</div>
 
@@ -104,10 +90,10 @@
 				<div class="dynamicIdentifiersContainer">
 					<div class="form-group row">
 						<div class="col-md-4 mb-3">
-							<h4>Идентификаторы:</h4>
+							<span class="h4">Идентификаторы:</span>
 						</div>
-						<div class="col-md-2 mb-3">
-							<button class="btn btn-secondary btn-sm btn-block" id="addIdentifiersBtn" type="button" value='Добавление'>
+						<div class="col-md-8 mb-3">
+							<button class="btn btn-secondary btn-sm" id="addIdentifiersBtn" type="button" value='Добавление'>
 								Добавить
 							</button>
 						</div>
@@ -115,13 +101,13 @@
 				</div>
 
 				<hr class="mb-4">
-				<button class="btn btn-primary btn-lg btn-block mb-4" type="submit">Добавить запись</button>
+				<button class="btn btn-info btn-lg btn-block mb-4" id="add_record_btn" type="submit">Добавить запись</button>
 			</form>
 		</div>
 	</div>
 </main>
 
-<script src="/javascripts/docs/formcontrol.js"></script>
 <script src="/javascripts/docs/options/articles_list.js"></script>
 <script src="/javascripts/docs/options/decisions_list.js"></script>
+<script src="/javascripts/docs/options/phase_list.js"></script>
 <script src="/javascripts/docs/add_record.js"></script>

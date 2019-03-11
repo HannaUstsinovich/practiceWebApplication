@@ -1,0 +1,45 @@
+<main role="main" class="col-md-12">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+		<h4>Список всех идентификаторов</h4>
+		<div class="btn-toolbar mb-2 mb-md-0 ml-auto">
+			<div class="btn-group">
+				<a href="/docs/user/{{user.id}}" role="button" class="btn btn-md btn-outline-secondary" id="user-records">Мои
+					записи</a>
+				<a href="/docs/all" role="button" class="btn btn-md btn-outline-secondary" id="all-records">Все записи</a>
+				<a href="#" role="button" class="btn btn-md btn-outline-secondary" id="identifiers-records">Идентификаторы</a>
+			</div>
+		</div>
+	</div>
+	{{#if identifiers}}
+	<div class="table-responsive pt-4">
+		<table class="table table-striped table-bordered table-hover text-center" style="width:100%" id="identifiers-table">
+			<thead>
+				<tr class="text-center" role="row">
+					<th scope="col">№</th>
+					<th scope="col">Признак</th>
+					<th scope="col">Идентификатор</th>
+					<th scope="col">Примечание</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each identifiers}}
+				<tr role="row" data-target="table-info" data-href="/docs/{{this.record_id}}/info">
+					<td class="tableRowNum">{{../paginate.start}}</td>
+					<td>{{this.feature}}</td>
+					<td>{{this.identifier}}</td>
+					<td>{{this.remark}}</td>
+				</tr>
+				{{/each}}
+			</tbody>
+		</table>
+	</div>
+
+	{{else}}
+	Документы не найдены
+	{{/if}}
+</main>
+
+<script src="/javascripts/docs/list/all_identifiers.js"></script>
+<script src="/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/simplePagination.js/jquery.simplePagination.js"></script>

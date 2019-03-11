@@ -43,35 +43,10 @@ router.get('/', function (req, res) {
             return;
         }
 
-        // Актуальные документы:
-        //
-        //  - созданные мной
-        //  - на моем контроле
-        //  - порученные мне
-
-        // Завершенные документы:
-        //  - созданные мной
-        //  - на моем контроле
-        //  - порученные мне
-        //  - завершенные мной
-
-        // Все
-        // - активные
-        // - закрытые
-
         promise.all(
             [
-                // Актуальные документы
-                // model.getDocsCount({user_id: req.user.id, resolved: false}), // созданные мной
-                // model.getDocsUnderControl({count: true, user_id: req.user.id, active_control: true}), // на моем контроле
-                // model.getDocsUnderAssign({count: true, user_id: req.user.id, active_only: true}), // порученные мне
-
-
-                // Завершенные документы
-                // model.getDocsCount({user_id: req.user.id, resolved: true}), // созданные мной
-                // model.getDocsUnderControl({count: true, user_id: req.user.id, resolved: true}), // на моем контроле
-                // model.getDocsUnderAssign({count: true, userIds: userIds, resolved: true}), // порученные мне
-                // model.getDocsCount({resolved: true, resolverIds: req.user.id}), // завершенные мной
+				// Все документы
+				// model.getAllRecords(),
 
                 // // Все документы
                 // model.getDocsCount({resolved: false}),
@@ -128,10 +103,10 @@ function displayResults(result, req, res) {
         // },
 
         user: req.user,
-        can_read_any_doc: user.can(req.user.admin, "read_any_doc"),
+        // can_read_any_doc: user.can(req.user.admin, "read_any_doc"),
         // can_view_reports: user.can(req.user.admin, "view_reports"),
         can_add_doc: user.can(req.user.admin, "add_doc"),
-        can_change_settings: user.can(req.user.admin, "change_settings"),
+        // can_change_settings: user.can(req.user.admin, "change_settings"),
         is_default_assignee: isDefaultAssignee(req.user.id)
     });
 }

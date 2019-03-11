@@ -35,7 +35,7 @@ module.exports = {
 
 
     /**
-     * Создание документа
+     * Создание записи
      *
      * @param fields
      * @returns {*}
@@ -43,94 +43,49 @@ module.exports = {
 	createDoc: function (fields, callback) {
 		this.filter(fields, 'iferror');
 
-		// var query = "--  FUNCTION: createDoc \n" +
-		// 	"SELECT COUNT(*) as count FROM `records` " +
-		// 	" WHERE `book_number` = " + fields.book_number + "" +
-		// 	" AND `registration_date` = " + fields.registration_date + "" +
-		// 	" AND `cc_article` = " + fields.cc_article + "" +
-		// 	" AND `comment` = " + fields.comment + "" +
-		// 	" AND `decision` = " + fields.decision + "" +
-		// 	" AND `decision_date` = " + fields.decision_date + "" +
-		// 	" AND `user_id` = " + fields.user_id +
-		// 	"";
+		var query = "INSERT INTO `records` " +
+			"(" +
+			"`employee`, " +
+			"`service`, " +
+			"`book_number`, " +
+			"`registration_date`, " +
+			"`cc_article`, " +
+			"`description`, " +
+			"`comment`, " +
+			"`decision`, " +
+			"`decision_date`, ";
 
-		// var self = this;
-		// this.query(query).then(function (data) {
-		// 	if (data[0].count > 0) {
-		// 		callback(false);
-		// 		return;
-		// 	}
-
-		if (fields.phase == undefined) {
-			var query = "INSERT INTO `records` " +
-				"(" +
-				"`employee`, " +
-				"`service`, " +
-				"`book_number`, " +
-				"`registration_date`, " +
-				"`cc_article`, " +
-				"`description`, " +
-				"`comment`, " +
-				// "`deadline`, " +
-				"`decision`, " +
-				"`decision_date`, " +
-				"`user_id` " +
-				") " +
-				"VALUES (" +
-				fields.employee + "," +
-				fields.service + "," +
-				fields.book_number + "," +
-				fields.registration_date + "," +
-				fields.cc_article + "," +
-				fields.description + "," +
-				fields.comment + "," +
-				// fields.deadline + "," +
-				fields.decision + "," +
-				fields.decision_date + ","
+		if (fields.phase && fields.phase_date) {
+			query += "`phase`, `phase_date`, ";
 		}
-		else {
-			var query = "INSERT INTO `records` " +
-				"(" +
-				"`employee`, " +
-				"`service`, " +
-				"`book_number`, " +
-				"`registration_date`, " +
-				"`cc_article`, " +
-				"`description`, " +
-				"`comment`, " +
-				// "`deadline`, " +
-				"`phase`, " +
-				"`phase_date`, " +
-				"`decision`, " +
-				"`decision_date`, " +
-				"`user_id` " +
-				") " +
-				"VALUES (" +
-				fields.employee + "," +
-				fields.service + "," +
-				fields.book_number + "," +
-				fields.registration_date + "," +
-				fields.cc_article + "," +
-				fields.description + "," +
-				fields.comment + "," +
-				// fields.deadline + "," +
-				fields.phase + "," +
-				fields.phase_date + "," +
-				fields.decision + "," +
-				fields.decision_date + ","
+
+		query += "`user_id` " +
+
+			") " +
+			"VALUES (" +
+			fields.employee + "," +
+			fields.service + "," +
+			fields.book_number + "," +
+			fields.registration_date + "," +
+			fields.cc_article + "," +
+			fields.description + "," +
+			fields.comment + "," +
+			fields.decision + "," +
+			fields.decision_date + ","
+
+		if (fields.phase && fields.phase_date){
+			console.log("yes it is")
+			query += fields.phase + "," + fields.phase_date + ",";
 		}
 
 		query +=
 			fields.user_id +
 			");";
 
-		// console.log(query.toString() + "");
+			console.log(query)
 		this.query(query).then(function (data) {
 			callback(data)
 		});
-
-		// });
-
 	},
 
 	/**
@@ -140,27 +95,32 @@ module.exports = {
      * @returns {*}
      */
 
-	 //В разработке...
-	addIdentifier: function (fields) {
+
+	//Добавление идентифкатора
+	addIdentifier: function (fields, callback) {
 		// this.filter(fields);
 
 		var query = "INSERT INTO `identifiers` " +
 			"(`feature`, " +
 			"`identifier`, " +
 			"`remark`, " +
-			"`record_id` " +
+			"`record_id`" +
 			") " +
 			"VALUES (" +
-			fields.feature + "," +
-			fields.identifier + "," +
-			fields.remark + ","
+			fields.feature + ", " +
+			fields.identifier + ", " +
+			fields.remark + ", "
 
 		query +=
 			fields.record_id +
 			");";
 
-		// console.log(query.toString());
-		this.query(query);
+		this.query(query).then(function (data) {
+			callback(data)
+		}).catch((err) => {
+			console.log("Failed to query for identifier: " + err)
+			return;
+		});
 	},
 
 	/**
@@ -199,6 +159,53 @@ module.exports = {
 		});
 	},
 
+
+	/**
+		 * Получить записи
+		 * @param fields
+		 * @returns {*|SearchBuilder}
+		 */
+	getRecords: function (fields) {
+		this.filter(fields);
+
+		var query = "SELECT `records`.`*`, `users`.`fullname` AS `username`, " +
+			"DATE_FORMAT(`date_created`, '%d.%m.%Y') AS `date_created`, " +
+			"DATE_FORMAT(`registration_date`, '%d.%m.%Y') AS `registration_date` " +
+			"FROM `records` JOIN `users` " +
+			"ON `records`.`user_id` = `users`.`id` WHERE 1=1";
+
+		if (fields.user_id)
+			query += " AND `records`.`user_id` = " + fields.user_id;
+
+		query += " ORDER BY `id` DESC ";
+
+		return this.query(query).catch((err) => {
+			console.log("Failed to query for record: " + err)
+			return;
+		});
+	},
+
+	/**
+			 * Получить идентификаторы
+			 * @param fields
+			 * @returns {*|SearchBuilder}
+			 */
+	getIdentifiers: function (fields) {
+		this.filter(fields);
+
+		var query = "SELECT `identifiers`.`*` " +
+			"FROM `identifiers` JOIN `records` ON (`identifiers`.`record_id` = `records`.`id`) WHERE 1=1";
+
+		if (fields.doc_id)
+			query += " AND `record_id` IN (" + fields.doc_id + ") ";
+
+		query += " ORDER BY `id` DESC ";
+
+		return this.query(query).catch((err) => {
+			console.log("Failed to query for user: " + err)
+			return
+		});
+	},
 
 
 
@@ -460,45 +467,60 @@ module.exports = {
 	 * @returns {*|SearchBuilder}
 	 */
 	// getDocs: function (params) {
-	//     this.filter(params);
+	// 	this.filter(params);
 
-	//     var query = "SELECT `docs`.`*`, \
-	//         `u`.`name` as `username`,\
-	//         `u_res`.`name` as `resolver_name`,\
-	//         DATE_FORMAT(`date_added`, '%d.%m.%Y') as `date_added`,\
-	//         DATE_FORMAT(`date_resolved`, '%d.%m.%Y') as `date_resolved`,\
-	//         IF(`date_resolved`, 1, 0) as `resolved`\
-	//         FROM `docs`\
-	//         JOIN `users` `u` ON `docs`.`user_id` = `u`.`id`\
-	//         LEFT JOIN `users` `u_res` ON `docs`.`resolver_id` = `u_res`.`id`\
-	//         WHERE 1=1\
-	//         ";
+	// 	var query = "SELECT `records`.`*`, " +
+	// 		"DATE_FORMAT(`date_created`, '%d.%m.%Y') AS `date_created`, " +
+	// 		"DATE_FORMAT(`registration_date`, '%d.%m.%Y') AS `registration_date`, " +
+	// 		"DATE_FORMAT(`decision_date`, '%d.%m.%Y') AS `decision_date` ";
 
-	//     if (params.resolved === false || params.active_only === true) {
-	//         query += " AND date_resolved IS NULL ";
-	//     }
+	// 	if (this.isPhaseExists)
+	// 		query += ", DATE_FORMAT(`phase_date`, '%d.%m.%Y') AS `phase_date` ";
 
-	//     if (params.resolved === true || params.active_only === false) {
-	//         query += " AND date_resolved IS NOT NULL ";
-	//     }
+	// 	query += "FROM `records` JOIN `users` ON (`records`.`user_id` = `users`.`id`) WHERE 1=1 ";
 
+	// 	if (params.doc_id) {
+	// 		query += " AND `records`.`id` IN (" + params.doc_id + ") ";
+	// 	}
 
-	//     if (params.resolverIds) {
-	//         query += " AND `resolver_id` IN (" + params.resolverIds + ") ";
-	//     }
+	// 	// if (params.user_id) {
+	// 	// 	query += " AND `records`.`user_id`=" + params.user_id;
+	// 	// }
 
-	//     if (params.doc_id) {
-	//         query += " AND `docs`.`id` IN (" + params.doc_id + ") ";
-	//     }
+	// 	query += " ORDER BY `date_created` DESC ";
 
-	//     if (params.user_id) {
-	//         query += " AND `docs`.`user_id`=" + params.user_id;
-	//     }
-	//     query += " ORDER BY `date_added` DESC ";
-
-	//     return this.query(query);
+	// 	return this.query(query);
 	// },
 
+	getDocs: function (params) {
+		this.filter(params);
+
+		var query = "SELECT `records`.`*`, `identifiers`.`feature`, `identifiers`.`identifier`, `identifiers`.`remark`," +
+			"DATE_FORMAT(`date_created`, '%d.%m.%Y') AS `date_created`, " +
+			"DATE_FORMAT(`registration_date`, '%d.%m.%Y') AS `registration_date`, " +
+			"DATE_FORMAT(`decision_date`, '%d.%m.%Y') AS `decision_date` ";
+
+		if (this.isPhaseExists)
+			query += ", DATE_FORMAT(`phase_date`, '%d.%m.%Y') AS `phase_date` ";
+
+		query += "FROM `records` LEFT OUTER JOIN `identifiers` ON `identifiers`.`record_id` IN (" + params.doc_id + ") " +
+			"WHERE 1=1 AND `records`.`id` IN (" + params.doc_id + ") ";
+
+		// if (params.user_id) {
+		// 	query += " AND `records`.`user_id`=" + params.user_id;
+		// }
+
+		query += " ORDER BY `date_created` DESC ";
+
+		return this.query(query);
+	},
+
+	//Проверка, существует ли блок "Срок рассмотрения материала"
+	isPhaseExists: function () {
+		if ("SELECT phase_date FROM records" == undefined || "SELECT phase FROM records" == undefined)
+			return false;
+		return true
+	},
 
 	/**
 	 * Получить пользователя или нескольких

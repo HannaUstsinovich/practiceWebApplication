@@ -25,7 +25,7 @@ router.all('*', function (req, res, next) {
 	next();
 });
 
-// Добавление документа
+// Добавление записи
 router.post('/new', function (req, res) {
 	cache.flushAll();
 	var form = new formidable.IncomingForm();
@@ -35,7 +35,6 @@ router.post('/new', function (req, res) {
 	var properfields = {};
 
 	form.on('field', function (name, value) {
-		// console.log('on field');
 		if (!properfields[name]) {
 			properfields[name] = value;
 		} else {
@@ -53,24 +52,26 @@ router.post('/new', function (req, res) {
 	form.parse(req, function (err, fields, files) {
 		fields = properfields;
 
-		DEBUG_CLIENT(req.user.id, "Добавил документ");
-
 		saveDoc(fields, req, res, function (savedDocParams) {
 			if (savedDocParams.success) {
-
-				// if (files.files.length == undefined) {
-				//     files = {files: [files.files]};
-				// }
-
-				for (var key in files.files) {
-					saveDocFile(files.files[key], savedDocParams.record_id);
+				if (fields.feature != undefined) {
+					//Блок для добавления идентификатора
+					fields.record_id = savedDocParams.record_id;
+					saveIdentifier(fields, req, res, function (savedIdentifierParams) {
+						if (savedIdentifierParams.success)
+							res.end(JSON.stringify(savedIdentifierParams));
+						return;
+						// 	res.render('docs/saved_record', savedDocParams);
+						// return;
+					})
+				}
+				else {
+					res.end(JSON.stringify(savedDocParams));
+					return;
 				}
 			}
-			res.render('docs/saved_record', savedDocParams);
-			return;
 		});
-	}
-	);
+	});
 })
 
 
@@ -102,50 +103,153 @@ var renderForm = function (req, res) {
 	});
 }
 
-var formatDate = function (date) {
-	if (!date) {
-		return false;
-	}
-
-	var arr = date.split(".");
-	return [arr[2], arr[1], arr[0]].join(".");
-}
-
-//Сохранение документа
+//Сохранение записи
 var saveDoc = function (fields, req, res, callback) {
-	
+
 	fields.user_id = req.user.id;
-	fields.date = formatDate(fields.date);
 
 	model.createDoc(fields, function (rows) {
-
 		var params = {
 			user: req.user,
 		}
 
 		if (rows === false) {
 			params.error = true;
-			params.message = "Ошибка во время сохранения, документ уже существует";
+			params.message = "Ошибка во время сохранения, запись уже существует";
 			res.render('docs/saved_record', params);
 			return;
 		}
 
 		var recordId = rows.insertId;
-		var userId = req.user.id;
 
 		params.record_id = recordId;
 
-		//Блок для добавления идентификатора
-		fields.record_id = recordId;
-		if (fields.feature != undefined)
-			model.addIdentifier(fields);
-
 		if (rows.affectedRows == 1) {
 			params.success = true;
-			params.message = "Документ сохранен успешно";
+			params.message = "Запись сохранена успешно";
 			params.messageType = "primary";
 		}
 		else {
+			params.success = false;
+			params.message = "Ошибка во время сохранения";
+			res.render('docs/saved_record', params);
+		}
+
+		callback(params);
+	})
+}
+
+// Получить все записи
+router.get('/all', function (req, res) {
+	// if (!user.can(req.user.admin, "read_any_doc")) {
+	//     res.sendStatus(403);
+	// }
+
+	var fields = {};
+
+	model.getRecords(fields).then(function (records) {
+		var cleanIdsSource = req.body.clean ? req.body.clean.split(",") : [];
+		var errorIdsSource = req.body.error ? req.body.error.split(",") : [];
+
+		var params = {
+			user: req.user,
+			records: paginate.slice(req)(records),
+			pages: paginate.getPages(req, res)(records.length),
+			showIds: false,
+			postPage: true,
+			cleanIdsSource: cleanIdsSource,
+			errorIdsSource: errorIdsSource
+		}
+		res.render('docs/list/all_records', params);
+	})
+})
+
+// Получить записи текущего пользователя
+router.get('/user/:id', function (req, res) {
+
+	var fields = {
+		user_id: req.params.id
+	};
+
+	model.getRecords(fields).then(function (records) {
+		var cleanIdsSource = req.body.clean ? req.body.clean.split(",") : [];
+		var errorIdsSource = req.body.error ? req.body.error.split(",") : [];
+
+		var params = {
+			user: req.user,
+			records: paginate.slice(req)(records),
+			pages: paginate.getPages(req, res)(records.length),
+			showIds: false,
+			postPage: true,
+			cleanIdsSource: cleanIdsSource,
+			errorIdsSource: errorIdsSource
+		}
+		res.render('docs/list/user_records', params);
+	})
+})
+
+// Получить все идентификаторы
+router.get('/identifiers', function (req, res) {
+
+	var fields = {};
+
+	model.getIdentifiers(fields).then(function (identifiers) {
+		var cleanIdsSource = req.body.clean ? req.body.clean.split(",") : [];
+		var errorIdsSource = req.body.error ? req.body.error.split(",") : [];
+		var params = {
+			user: req.user,
+			identifiers: paginate.slice(req)(identifiers),
+			pages: paginate.getPages(req, res)(identifiers.length),
+			showIds: false,
+			postPage: true,
+			cleanIdsSource: cleanIdsSource,
+			errorIdsSource: errorIdsSource
+		}
+		res.render('docs/list/all_identifiers', params);
+	})
+})
+
+// Добавление идентификатора
+router.post('/:id/info', function (req, res) {
+	cache.flushAll();
+	var form = new formidable.IncomingForm();
+	var record_id = req.params.id;
+
+	form.multiples = true;
+
+	form.parse(req, function (err, fields, files) {
+		for (var key in fields) {
+			if (fields.hasOwnProperty(key)) {
+				fields[key] = "'" + fields[key] + "'";
+			}
+		}
+
+		fields.record_id = record_id;
+
+		saveIdentifier(fields, req, res, function (savedIdentifierParams) {
+			res.end(JSON.stringify(savedIdentifierParams));
+			return;
+		});
+	});
+})
+
+var saveIdentifier = function (fields, req, res, callback) {
+
+	model.addIdentifier(fields, function (rows) {
+
+		var params = {}
+
+		var identifierId = rows.insertId;
+
+		params.identifier_id = identifierId;
+
+		if (rows.affectedRows == 1) {
+			params.success = true;
+			params.message = "Запись сохранена успешно";
+			params.messageType = "primary";
+		}
+		else {
+			params.error = true;
 			params.success = false;
 			params.message = "Ошибка во время сохранения";
 		}
@@ -263,50 +367,92 @@ var saveDoc = function (fields, req, res, callback) {
 //     })
 // }
 
-// info
+// Отобразить документ полностью
+router.get('/:id/:action?', function (req, res) {
+	var params = {};
+	var render = req.params.action == 'edit' ? 'docs/edit' : 'docs/info';
+
+	params.doc_id = req.params.id;
+	// params.active_only = true;
+
+	Promise.all([
+		model.getDocs(params),
+	]).then(function (result) {
+		var doc = result[0][0];
+
+		if (result[0][0].feature != null && result[0][0].feature != undefined) {
+			var identifiers = getIdentifiersObject(result);
+			delete doc.feature;
+			delete doc.identifier;
+			delete doc.remark;
+		}
+
+		if (typeof doc == "undefined") {
+			res.sendStatus(403);
+			return;
+		}
+
+		var params = {
+			doc: doc,
+			identifiers: identifiers,
+			user: req.user,
+			can_add_identifier: canAddIdentifier(doc, req)
+			// can_edit_doc: user.can(req.user.admin, "edit_doc"),
+			// can_remove_doc: canRemoveDoc(doc, req),
+		}
+
+		res.render(render, params);
+	})
+})
+
+function getIdentifiersObject(obj) {
+	var identifiers = {}
+
+	for (var k = 0; k < obj[0].length; k++) {
+		var temp = {}
+		Object.keys(obj[0][k]).forEach(function (key) {
+			if (key == "feature" || key == "identifier" || key == "remark")
+				temp[key] = obj[0][k][key];
+		});
+		identifiers[k] = temp;
+	}
+	return identifiers;
+}
+
 // router.get('/:id/:action?', function (req, res) {
 //     var params = {};
 //     var render = req.params.action == 'edit' ? 'docs/edit' : 'docs/info';
-//     var print = req.params.action == 'print';
+//     // var print = req.params.action == 'print';
 
 //     params.doc_id = req.params.id;
-//     // params.active_only = true;
-
-//     promise.all([
-//         model.getDocs(params),
-//         model.getDocControllers({doc_id: req.params.id, active_only: true}),
-//         model.getDocAssigners({doc_id: req.params.id, active_only: true}),
-//     ]).then(function (result) {
+// 	// params.active_only = true;
+// 	model.getDocs(params).then(function (result) {
 //         // var doc = populateStatus(result[0][0], req.user.id);
-//         var doc = result[0][0];
+// 		var doc = paginate.slice(req)(result);
+// 		console.log(doc);
 
 //         if (typeof doc == "undefined") {
 //             res.sendStatus(403);
 //             return;
 //         }
-//         var controllers = result[1];
-//         var assigners = result[2];
+//         // var controllers = result[1];
+//         // var assigners = result[2];
 
 //         var params = {
-//             doc: doc,
-//             controllers: controllers,
-//             assigners: assigners,
+// 			doc: doc,
+//             // controllers: controllers,
+//             // assigners: assigners,
 //             user: req.user,
-//             can_edit_doc: user.can(req.user.admin, "edit_doc"),
-//             can_remove_doc: canRemoveDoc(doc, req),
-//             can_complete_doc: canCompleteDoc(doc, assigners, req),
-//             can_edit_controllers: canEditControl(doc, req),
-//             can_edit_assigners: canEditAssign(doc, req),
-//             can_remove_own_control: canRemoveControl(doc, controllers, req),
-//             can_add_files: canEditFiles(doc, req)
+//             // can_edit_doc: user.can(req.user.admin, "edit_doc"),
+//             // can_remove_doc: canRemoveDoc(doc, req),
 //         }
 
-//         if (print) {
-//             params.print = true;
-//             params.layout = false;
-//         }
+//         // if (print) {
+//         //     params.print = true;
+//         //     params.layout = false;
+//         // }
 
-//         res.render(render, params);
+//         res.render(render, doc);
 //     })
 // })
 
@@ -366,5 +512,26 @@ var saveDoc = function (fields, req, res, callback) {
 //         fs.rmdirSync(path);
 //     }
 // };
+
+
+/**
+ * 1. has superpower
+ * 2. created doc himself
+ *
+ * @param user
+ * @param doc
+ * @returns {boolean}
+ */
+var canAddIdentifier = function (doc, req) {
+	if (doc.user_id == req.user.id && user.can(req.user.admin, "add_own_identifier")) {
+		return true;
+	}
+
+	if (user.can(req.user.admin, "add_any_identifier")) {
+		return true;
+	}
+
+	return false;
+}
 
 module.exports = router;

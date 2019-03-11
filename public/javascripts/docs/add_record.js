@@ -2,27 +2,12 @@ $(function () {
 	// "use strict";
 
 	// ОБРАБОТКА ФРЕЙМА "Срок рассмотрения материала"
-	var dateField1 = $('<div class="input-group input-group-sm col-md-3 mb-2">')
-		.append('<input type="date" class="form-control period" id="dateField1" name="phase_date" required>');
-	var dateField2 = $('<div class="input-group input-group-sm col-md-3 mb-2">')
-		.append('<input type="date" class="form-control period" id="dateField2" name="phase_date" required>');
-	var dateField3 = $('<div class="input-group input-group-sm col-md-3 mb-2">')
-		.append('<input type="date" class="form-control period" id="dateField3" name="phase_date" required>');
-
-	var dateFieldArray = [dateField1, dateField2, dateField3];
-	var phaseID = ["phaseExtended", "phaseSuspended", "phaseRenewed"];
-
-	$('.custom-control-label').on('click', function () {
-		for (var i = 0; i < phaseID.length; i++) {
-			if ($(this).attr("id") == phaseID[i]) {
-				$(this).closest("div.row").append(dateFieldArray[i]);
-			}
-			else {
-				$(dateFieldArray[i]).find("input").val("");
-				$(dateFieldArray[i]).remove();
-			}
-		}
-	});
+	$("select[name=phase]").on('change', function () {
+		if ($("select[name=phase] option:selected") && $(this).val() != "")
+			$("input[id=phase_date").prop({ 'required': true, 'disabled': false });
+		else
+			$("input[id=phase_date").prop({ 'required': false, 'disabled': true });
+	})
 
 
 	// ОБРАБОТКА ДАТЫ ДЛЯ ПОЛЯ "Срок рассмотрения материала:" (дата регистрации + 10 дней)
@@ -31,7 +16,7 @@ $(function () {
 	$(".registrationDate").change(function () {
 		regdate = $(this).val();
 		var correctDate = formatDate(addDays(regdate, 10));
-		$(".deadline").text(correctDate + " ");
+		$(".deadline").text(correctDate + "");
 	});
 
 	function addDays(date, days) {
@@ -41,7 +26,9 @@ $(function () {
 	}
 
 	function formatDate(date) {
-		return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
+		var day = date.getDate();
+		var month = date.getMonth() + 1;
+		return (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + date.getFullYear();
 	}
 
 	// ОБРАБОТКА ФРЕЙМА "Идентификаторы"
@@ -59,7 +46,7 @@ $(function () {
 		var row = $('<div/>').addClass("form-group row").appendTo(div);
 
 		var col = $('<div/>').addClass("col-md-5").appendTo(row);
-		var select = $('<select/>', {
+		var selectFeature = $('<select/>', {
 			type: 'text',
 			'class': 'form-control',
 			'id': 'feature',
@@ -67,10 +54,12 @@ $(function () {
 			'required': 'true'
 		}).appendTo(col);
 
-		$('<option/>', { value: "" }).html("Выберите признак...").appendTo(select);
-		$("<option/>").html("Признак1").appendTo(select);
-		$("<option/>").html("Признак2").appendTo(select);
-		$("<option/>").html("Признак3").appendTo(select);
+		//Получение списка для признака идентификатора	
+		$('<option/>', { value: "" }).html("Выберите признак...").appendTo(selectFeature);
+		$('<option/>').html("Признак1").appendTo(selectFeature);
+		$('<option/>').html("Признак2").appendTo(selectFeature);
+		$('<option/>').html("Признак3").appendTo(selectFeature);
+
 
 		col = $('<div/>').addClass("col-md-7").appendTo(row);
 		var input = $('<input/>', {
@@ -117,4 +106,38 @@ $(function () {
 		$('#addIdentifiersBtn').prop('disabled', false);
 	}
 
+
+	// Обработка формы и ее отправление на сервер
+
+	function toServerData(formatData) {
+		console.log("CLIENT")
+		for (var [key, value] of formatData.entries()) {
+			if (key == "phase" || key == "phase_date") {
+				if (!value)
+					formatData.delete(key);
+			}
+		}
+	};
+
+	function reqListener() {
+		if (JSON.parse(this.response).success) {
+			window.location.href = '/docs/all';
+		}
+	}
+
+	function onclickSubmitBtn(event) {
+		var form = document.getElementById('inputForm');
+		if (form.checkValidity()) {
+			event.preventDefault();
+			var formData = new FormData(form);
+			toServerData(formData);
+			var request = new XMLHttpRequest();
+			request.onload = reqListener;
+			request.open('POST', '/docs/new/', /* async = */ true);
+			request.send(formData)
+		}
+	};
+
+	var submitBtn = document.getElementById('add_record_btn');
+	submitBtn.addEventListener('click', onclickSubmitBtn);
 });

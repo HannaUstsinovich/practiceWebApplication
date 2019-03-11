@@ -10,7 +10,7 @@ module.exports = {
         'host': 'localhost',
         'user': 'root',
         'password': '1234!aUst',
-        'database': 'appdb',
+        'database': 'appbd',
         'admin_id': 2
     },
 
