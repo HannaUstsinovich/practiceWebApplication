@@ -62,49 +62,89 @@ router.post('/user/add', function (req, res) {
 		userM.setEmail(fields.email);
 		userM.setPassword(fields.password);
 		userM.saveUser(function (user) {
-			res.render('settings/add_user', {
+			userM.setId(user[0].id);
+			var params = {
 				success: true,
 				result_message: "Пользователь успешно добавлен",
-				user: req.user
-			})			
+				user: user
+			}
+			res.setHeader('Content-Type', 'application/json');
+			res.end(JSON.stringify(params));
 		});
 	})
 });
 
-// router.get('/user/change_password', function (req, res) {
-//     res.render('settings/change_password', {
-//         user: req.user
-//     });
-// });
+router.get('/user/change_password', function (req, res) {
+	res.render('settings/change_password', {
+		user: req.user
+	});
+});
 
+router.put('/user/:id?/change_password', function (req, res) {
+	if (req.params.id) {
+		if (req.params.id !== req.user.id && !user.can(req.user.admin, 'change_any_password')) {
+			res.sendStatus(403);
+			return;
+		}
+		var employeeId = req.params.id;
+	}
+	else {
+		var employeeId = req.user.id
+	}
 
-// router.get('/user/change_password/:id', function (req, res) {
-//     if (!user.can(req.user.admin, "change_any_password")) {
-//         res.sendStatus(403);
-//         return;
-//     }
-//     //req.params.id
-//     model.getUsers({user_id: req.params.id}).then(function (row) {
-//         res.render('settings/change_password', {
-//             user: req.user,
-//             recipient: row[0]
-//         })
-//     });
-// });
+	var form = new formidable.IncomingForm();
 
-// router.get('/users/list', function (req, res) {
-//     if (!user.can(req.user.admin, 'edit_users')) {
-//         res.sendStatus(403);
-//         return;
-//     }
+	form.multiples = true;
 
-//     model.getUsers({}).then(function (users) {
-//         res.render('settings/users/list', {
-//             users: users,
-//             user: req.user
-//         })
-//     })
-// });
+	form.parse(req, function (err, fields) {
+		var userModule = new UserModule();
+		userModule.setId(employeeId);
+		userModule.setPassword(fields.password);
+		userModule.updatePassword(function (result) {
+			var params = {
+				success: true,
+				user: req.user
+			}
+			res.setHeader('Content-Type', 'application/json');
+			res.end(JSON.stringify(params))
+		})
+	})
+})
+
+router.get('/user/change_password', function (req, res) {
+	res.render('settings/change_password', {
+		user: req.user
+	});
+});
+
+router.get('/user/:id/change_password/', function (req, res) {
+	if (!user.can(req.user.admin, "change_any_password")) {
+		res.sendStatus(403);
+		return;
+	}
+
+	model.getUsers({ user_id: req.params.id }).then(function (row) {
+		res.render('settings/change_password', {
+			user: req.user,
+			employee: row[0]
+		}
+		)
+	});
+});
+
+router.get('/users/list', function (req, res) {
+	if (!user.can(req.user.admin, 'edit_users')) {
+		res.sendStatus(403);
+		return;
+	}
+
+	model.getUsers({}).then(function (users) {
+		res.render('settings/users_list', {
+			users: users,
+			user: req.user
+		})
+	})
+});
 
 // router.get('/user/:id', function (req, res) {
 //     if (!user.can(req.user.admin, 'edit_user')) {

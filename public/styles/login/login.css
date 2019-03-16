@@ -66,7 +66,7 @@
 }
 
 body, html {
-	background-color: #ebebeb;
+	background-color: #E8F5E9;
 	height: 100%;
 	font-family: Raleway-Regular, sans-serif;
 }
@@ -140,7 +140,7 @@ iframe {
 
 .login-form-title {
   /* font-family: Raleway-SemiBold;; */
-  font-family: Noto Sans, sans-serif;
+  font-family:  Noto Sans, sans-serif;
   font-weight: bold;
   font-stretch: expanded;
   font-size: 22px;
@@ -157,8 +157,9 @@ iframe {
 /*//////////////////////////////////////////////////////////////////
 [ Utility ]*/
 .input-label {
-	font-family: Raleway-SemiBold;
-	font-size: 13px;
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+	/* Raleway-SemiBold*/;
+	font-size: 14px;
 	color: #555555;
 	line-height: 1.4;
 	text-transform: uppercase;
@@ -179,8 +180,8 @@ iframe {
 
 /*---------------------------------------------*/
 .input-data {
-  font-family: Raleway-Medium;
-  color: #555555;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  color: #3d3d3d;
   line-height: 1.2;
   font-size: 18px;
 
@@ -201,7 +202,7 @@ iframe {
   top: -1px;
   left: -1px;
   pointer-events: none;
-  border: 1px solid #2b61a8;
+  border: 1px solid #447ead;
   border-radius: 3px;
 
   visibility: hidden;
@@ -266,10 +267,11 @@ iframe {
 }
 
 .login-form-btn {
-  font-family: New Century Schoolbook, TeX Gyre Schola, serif;
-  font-size: 20px;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 21px;
   color: #fff;
   line-height: 1.2;
+  font-weight: bold;
 
   display: -webkit-box;
   display: -webkit-flex;
@@ -281,7 +283,7 @@ iframe {
   /* padding: 0 20px; */
   min-width: 150px;
   height: 55px;
-  background-color: #424242;
+  background-color: #006064;
   border-radius: 27px;
   margin-top: 15px;
 
@@ -292,7 +294,7 @@ iframe {
 }
 
 .login-form-btn:hover {
-  background-color: #6d6d6d;
+  background-color: #044547;
 }
 
 
@@ -324,7 +326,7 @@ iframe {
   right: 12px;
   pointer-events: none;
 
-  font-family: Raleway-Medium;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   color: #c80000;
   font-size: 14px;
   line-height: 1.4;
@@ -369,10 +371,10 @@ iframe {
 
 .footer{
 	margin: 5px;
-	background-color: #ebebeb; 
+	background-color: #E8F5E9; 
 	padding-top: 2%;
 	text-align: center; 
-	font-size: 1.1rem;
-	color:#6b6b6b;
+	font-size: 1rem;
+	color:#5f5f5f;
 	/* font-weight: bold; */
 }

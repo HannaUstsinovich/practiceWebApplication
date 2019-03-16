@@ -32,7 +32,7 @@ $(function () {
 	}
 
 	// ОБРАБОТКА ФРЕЙМА "Идентификаторы"
-	$('#addIdentifiersBtn').on('click', function () {
+	$('#showIdFieldsBtn').on('click', function () {
 		addDynamicIdentifiers();
 		return false;
 	})
@@ -99,18 +99,16 @@ $(function () {
 	}
 
 	function disableAddButton() {
-		$('#addIdentifiersBtn').prop('disabled', true);
+		$('#showIdFieldsBtn').prop('disabled', true);
 	}
 
 	function enableAddButton() {
-		$('#addIdentifiersBtn').prop('disabled', false);
+		$('#showIdFieldsBtn').prop('disabled', false);
 	}
 
 
 	// Обработка формы и ее отправление на сервер
-
 	function toServerData(formatData) {
-		console.log("CLIENT")
 		for (var [key, value] of formatData.entries()) {
 			if (key == "phase" || key == "phase_date") {
 				if (!value)
@@ -135,6 +133,7 @@ $(function () {
 			request.onload = reqListener;
 			request.open('POST', '/docs/new/', /* async = */ true);
 			request.send(formData)
+			submitBtn.setAttribute("disabled", "disabled")
 		}
 	};
 

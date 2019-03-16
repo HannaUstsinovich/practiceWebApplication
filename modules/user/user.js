@@ -35,34 +35,34 @@ var user = function () {
             });
         },
 
-        // updateUser: function (callback) {
-        //     if (!this.id) {
-        //         callback();
-        //         return;
-        //     }
+        updateUser: function (callback) {
+            if (!this.id) {
+                callback();
+                return;
+            }
 
-        //     var user = {
-        //         id: this.id,
-        //         fullname: this.fullname,
-        //         position: this.position,
-        //         department: this.department,
-        //         phone: this.phone,
-        //         email: this.email
-        //     }
+            var user = {
+                id: this.id,
+                fullname: this.fullname,
+                position: this.position,
+                department: this.department,
+                phone: this.phone,
+                email: this.email
+            }
 
-        //     model.updateUser(user).then(function (result) {
-        //         if (callback)
-        //             callback(result);
-        //     });
-        // },
+            model.updateUser(user).then(function (result) {
+                if (callback)
+                    callback(result);
+            });
+        },
 
-        // updatePassword: function (callback) {
-        //     model.updateUserPassword(this.id, this.password).then(
-        //         function (result) {
-        //             callback({success: result.affectedRows})
-        //         }
-        //     )
-        // },
+        updatePassword: function (callback) {
+            model.updateUserPassword(this.id, this.password).then(
+                function (result) {
+                    callback({success: result.affectedRows})
+                }
+            )
+        },
 
         setId: function (id) {
             this.id = id;
@@ -100,30 +100,6 @@ var user = function () {
         setPassword: function (password) {
             this.password = bcrypt.hashSync(password, null, null);
         },
-
-        // filterDocsError: function (errorDocIds, callback) {
-        //     var result = [];
-        //     promise.all([
-        //         model.filterDocsError(this.id, errorDocIds),
-        //         model.filterDocsControl(this.id, errorDocIds),
-        //         model.filterDocsAssign(this.id, errorDocIds),
-        //     ]).then(function (rawResult) {
-        //         var result = {};
-        //         rawResult.forEach(function (tableRes) {
-        //             if (typeof tableRes !== 'undefined' && tableRes.length) {
-        //                 tableRes.forEach(function (row) {
-        //                     if (!result[row.doc_id]) {
-        //                         result[row.doc_id] = 0;
-        //                     }
-
-        //                     result[row.doc_id] += row.count;
-        //                 })
-        //             }
-        //         })
-
-        //         callback(result);
-        //     })
-        // },
     }
 }
 

@@ -12,13 +12,13 @@
 	<link rel="stylesheet" href="/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
 	<link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
 	<link rel="stylesheet" href="/styles/messages.css">
+	<script src="/popper.js/dist/umd/popper-utils.min.js"></script>
 	<script src="/jquery/dist/jquery.min.js"></script>
-	<script src="/popper.js/dist/popper.min.js"></script>
 	<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 	{{#unless login}}
 	<link rel="stylesheet" href="/styles/wrapper.css">
 	{{/unless}}
-	<title>ОРПСВТ База</title>
+	<title>База ОРПСВТ</title>
 
 </head>
 
@@ -28,8 +28,8 @@
 	<header>
 		<nav class="navbar navbar-expand-lg navbar-static-top navbar-dark" role="navigation">
 			<a class="navbar-brand text-center font-weight-bold" href="/">
-			<i class="fa fa-home fa-fw"></i>
-			На главную
+				<i class="fa fa-home fa-fw"></i>
+				На главную
 			</a>
 
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -44,8 +44,8 @@
 						<i class="fa fa-user-circle fa-fw fa-lg" aria-hidden="true"></i>
 						<strong>{{user.fullname}}</strong>
 					</a>
-					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-						<a class="dropdown-item" href="/user/profile/{{user.id}}">
+					<div class="dropdown-menu dropdown-menu-md-right dropdown-menu-lg-right" aria-labelledby="dropdownMenuButton">
+						<a class="dropdown-item" href="/user/{{user.id}}/profile">
 							<i class="fa fa-user fa-fw text-black-50"></i>
 							Профиль
 						</a>
@@ -108,17 +108,19 @@
 							</div>
 						</div>
 					</div>
-					{{/if}}
-					{{{ body }}}
 				</div>
+				{{/if}}
+				{{{ body }}}
+
 			</div>
 
 			{{#unless login}}
+			
 			<!-- Sticky Footer -->
 			<footer class="sticky-footer">
-				<div class="container my-auto">
-					<div class="copyright text-center my-auto">
-						<span>База данных ОРПСВТ, 2019</span>
+				<div class="container">
+					<div class="copyright text-center">
+						<span>База данных ОРПСВТ КМ УВД Брестского облисполкома, 2019</span>
 					</div>
 				</div>
 			</footer>

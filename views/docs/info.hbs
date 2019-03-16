@@ -1,150 +1,339 @@
-<style>
-	th{
-		text-align: right;
-	}
-</style>
-<main role="main" class="col-md-12">
-	<div class="d-flex justify-content-center flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">
-		<h4 class="mb-4">Запись номер {{doc.id}}</h4>
-	</div>
-	<table class="table table-condensed">
-		<tbody>
-			<tr>
-				<th style="width:18%">ФИО:</th>
-				<td><a href="/user/profile/{{doc.user_id}}">{{doc.employee}}</a></td>
-			</tr>
-			<tr>
-				<th>ОВД:</th>
-				<td>{{doc.service}}</td>
-			</tr>
-			<tr>
-				<th>ЕК:</th>
-				<td>{{doc.book_number}}</td>
-			</tr>
-			<tr>
-				<th>Дата регистрации:</th>
-				<td>{{doc.registration_date}}</td>
-			</tr>
-			<tr>
-				<th>Статья УК:</th>
-				<td>{{doc.cc_article}}</td>
-			</tr>
-			<tr>
-				<th>Фабула:</th>
-				<td>{{doc.description}}</td>
-			</tr>
-			{{#if doc.comment}}
-			<tr>
-				<th>Примечание:</th>
-				<td>{{doc.comment}}</td>
-			</tr>
-			{{/if}}
-			{{#if doc.phase_date}}
-			<tr>
-				<th>Срок рассмотрения материала:</th>
-				<td>{{doc.phase}} <br> {{doc.phase_date}} </br> </td>
-			</tr>
-			{{/if}}
-			<tr>
-				<th>Процессуальное решение:</th>
-				<td>{{doc.decision}} <br> {{doc.decision_date}} </br> </td>
-			</tr>
+<link rel="stylesheet" href="/styles/docs/info.css">
+<main role="main" class="pt-3">
+	<div class="d-flex justify-content-center flex-wrap">
+		<div class="col-md-12 order-md-1">
+			<div class="flex-column">
+				<h4 class="mb-4 text-center">
+					<strong>Запись номер {{doc.id}}</strong>
+					<i class="fa fa-pencil-square-o fa-fw edit-icon" data-toggle="modal" data-target="#editRecordModal" aria-hidden="true"
+					 hidden>
+					</i>
+				</h4>
+			</div>
+			<div class="row">
+				<table class="table table-condensed border-bottom">
+					<tbody>
+						<tr>
+							<th style="width:19%">Сотрудник:</th>
+							<td><a href="/user/{{doc.user_id}}/profile">{{doc.employee}}</a></td>
+						</tr>
+						<tr>
+							<th>ОВД:</th>
+							<td>{{doc.service}}</td>
+						</tr>
+						<tr>
+							<th>ЕК:</th>
+							<td>{{doc.book_number}}</td>
+						</tr>
+						<tr>
+							<th>Дата регистрации:</th>
+							<td>{{doc.registration_date}}</td>
+						</tr>
+						<tr>
+							<th>Статья УК:</th>
+							<td>{{doc.cc_article}}</td>
+						</tr>
+						<tr>
+							<th>Фабула:</th>
+							<td>{{doc.description}}</td>
+						</tr>
+						{{#if doc.comment}}
+						<tr>
+							<th>Примечание:</th>
+							<td>{{doc.comment}}</td>
+						</tr>
+						{{/if}}
+						{{#if doc.phase_date}}
+						<tr>
+							<th>Срок рассмотрения материала:</th>
+							<td>{{doc.phase}} <br> {{doc.phase_date}}</td>
+						</tr>
+						{{/if}}
+						<tr>
+							<th>Процессуальное решение:</th>
+							<td>{{doc.decision}} <br> {{doc.decision_date}}</td>
+						</tr>
 
-			{{#if identifiers}}
-			<tr>
-				<th class="text-center" colspan="2">
-					<h5>Идентификаторы:</h5>
-				</th>
-			</tr>
-			{{#each identifiers}}
-			<tr>
-				<th>{{this.feature}}:</th>
-				<td>{{this.identifier}}
-					{{#if this.remark}}
-					&ensp;({{this.remark}})
-					{{/if}}
-				</td>
-			</tr>
-			{{!-- <tr>
-				<td colspan="2">
-					<span class="h6">{{this.feature}}:</span>
-					&ensp;{{this.identifier}}
-					{{#if this.remark}}
-					&ensp;({{this.remark}})
-					{{/if}}
-				</td>
-			</tr> --}}
-			{{/each}}
+						{{#if identifiers}}
+						<tr>
+							<th class="text-center" colspan="2">
+								<h5>Идентификаторы:</h5>
+							</th>
+						</tr>
+						{{#each identifiers as |item index|}}
+						<tr class="identifier-block{{index}}" data-get_id="{{item.identifierId}}">
+							<th id="featureSetter{{index}}" data-feature_option="{{item.feature}}">{{item.feature}}:</th>
+							<td>
+								<span id="identifierSetter{{index}}" data-identifier_value="{{item.identifier}}">{{item.identifier}}</span>
+								{{#if item.remark}}
+								&ensp;
+								(<span id="remarkSetter{{index}}" data-remark_value="{{item.remark}}">{{item.remark}}</span>)
+								{{/if}}
+								<i class="fa fa-pencil-square-o fa-fw edit-icon-id" data-toggle="modal" data-target="#editIdentifierModal"
+								 aria-hidden="true" hidden>
+								</i>
+							</td>
+						</tr>
+						{{/each}}
+						{{/if}}
+					</tbody>
+				</table>
+			</div>
+			<div class="row mb-3">
+				<button type="button" class="btn btn-info ml-auto" id="enableIdAddingBtn" data-toggle="modal" data-target="#addIdentifierModal"
+				 hidden>
+					<small>Добавить идентификатор</small>
+				</button>
+			</div>
+			{{#if can_edit_record}}
+			<div class="row show-edit-state mb-4">
+				<span class="ml-auto">
+					<i class="fa fa-pencil fa-fw"></i>
+					Редактировать запись</span>
+			</div>
 			{{/if}}
-			{{#if can_add_identifier}}
-			<tr>
-				<td colspan="2">
-					<button type="button" class="btn btn-info" data-toggle="modal" data-target="#addIdentifierModal">
-						<small>Добавить идентификатор</small>
-					</button>
-				</td>
-			</tr>
+			<div class="row hide-edit-state mb-4" hidden>
+				<span class="ml-auto">
+					<i class="fa fa-eye fa-fw"></i>
+					Вернуться в режим просмотра</span>
+			</div>
+			<div class="row">
+				<i class="ml-auto">Дата создания записи: {{doc.date_created}}</i>
+			</div>
+			{{#if doc.date_modified}}
+			<div class="row">
+				<i class="ml-auto">Дата редактирования записи: {{doc.date_modified}}</i>
+			</div>
 			{{/if}}
-		</tbody>
-	</table>
 
-	<!-- Modal -->
-	<div class="modal fade" id="addIdentifierModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title ml-3" id="modalLabel">Добавление идентификатора</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
+			<!-- Modal for record editing -->
+			<div class="modal fade" id="editRecordModal" tabindex="-1" role="dialog" aria-labelledby="editRecordLabel"
+			 aria-hidden="true">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title ml-3" id="editRecordLabel">Редактирование записи</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container-fluid">
+								<form role="form" id="editRecordForm">
+									<div class="form-group row">
+										<div class="col-md-4 mb-3">
+											<label for="book-number">Номер ЕК *</label>
+											<input type="number" min="1" class="form-control" id="book-number" name="book_number" value="{{doc.book_number}}"
+											 required>
+										</div>
+										<div class="col-md-4 mb-3">
+											<label for="registrationDate">Дата регистрации *</label>
+											<input type="date" class="form-control registrationDate" id="registrationDate" name="registration_date"
+											 value="" data-registration_date="{{doc.registration_date}}" required>
+										</div>
+										<div class="col-md-4 mb-3">
+											<label for="cc_article">Статья УК *</label>
+											<select class="form-control" id="cc_article" name="cc_article" data-article_option="{{doc.cc_article}}"
+											 required>
+											</select>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="description">Фабула *</label>
+										<textarea class="form-control" rows="6" id="description" name="description" placeholder="Введите описание"
+										 value="" required aria-label="Описание">{{doc.description}}</textarea>
+									</div>
+
+									<div class="form-group mb-4">
+										<label for="comment">Примечание</label>
+										<input type="text" class="form-control" id="comment" name="comment" value="{{doc.comment}}">
+									</div>
+
+									<hr class="mb-4">
+									<h4 class="mb-3">Срок рассмотрения материала:</h4>
+
+									<div class="form-group row">
+										<div class="col-md-8 mb-3">
+											<label for="phase">Состояние</label>
+											{{#if doc.phase}}
+											<select class="form-control" id="phase" name="phase" data-phase_option="{{doc.phase}}">
+											</select>
+											{{else}}
+											<select class="form-control" id="phase" name="phase">
+												<option value="">Выберите состояние...</option>
+											</select>
+											{{/if}}
+										</div>
+										<div class="col-md-4 mb-3">
+											<label for="phase_date">Дата</label>
+											{{#if doc.phase_date}}
+											<input type="date" class="form-control" id="phase_date" name="phase_date" placeholder=""
+											 data-phase_date_value="{{doc.phase_date}}" disabled>
+											{{else}}
+											<input type="date" class="form-control" id="phase_date" name="phase_date" placeholder="" disabled>
+											{{/if}}
+										</div>
+									</div>
+
+									<hr class="mb-4">
+									<h4 class="mb-3">Процессуальное решение:</h4>
+
+									<div class="form-group row">
+										<div class="col-md-8 mb-3">
+											<label for="decision">Решение по делу *</label>
+											<select class="form-control" id="decision" name="decision" data-decision_option="{{doc.decision}}" required>
+											</select>
+										</div>
+										<div class="col-md-4 mb-3">
+											<label for="decisionDate">Дата *</label>
+											<input type="date" class="form-control" id="decisionDate" name="decision_date" placeholder=""
+											 data-decision_date_value="{{doc.decision_date}}" required>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12 mb-4">
+											<small class="text-muted">После нажатия на кнопку "Сохранить данные" введенная информация будет передана для
+												дальнейшей обработки</small>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12 mb-3 text-right">
+											<button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+											<button class="btn btn-info" id="editRecordBtn" type="submit" data-doc_id="{{doc.id}}">
+												Сохранить данные</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="modal-body">
-					<div class="container-fluid">
-						<form role="form" id="inputIdentifierForm">
-							<div class="row">
-								<div class="col-md-5">
-									<div class="form-group">
-										<label for="inputFeature">Признак</label>
-										<select class="form-control feature" id="inputFeature" required>
-											<option value="">Выберите признак</option>
-										</select>
+			</div>
+
+			<!-- Modal for identifier editing -->
+			<div class="modal fade" id="editIdentifierModal" tabindex="-1" role="dialog" aria-labelledby="editIdentifierLabel"
+			 aria-hidden="true">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title ml-3" id="editIdentifierLabel">Редактирование идентификатора</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container-fluid">
+								<form role="form" id="editIdentifierForm">
+									<div class="row">
+										<div class="col-md-5">
+											<div class="form-group">
+												<label for="editFeature">Признак</label>
+												<select class="form-control feature" id="editFeature" name="feature" autofocus required>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-7">
+											<div class="form-group">
+												<label for="editIdentifier">Идентификатор</label>
+												<input type="text" class="form-control" id="editIdentifier" name="identifier" required>
+											</div>
+										</div>
 									</div>
-								</div>
-								<div class="col-md-7">
-									<div class="form-group">
-										<label for="inputIdentifier">Идентификатор</label>
-										<input type="text" class="form-control" id="inputIdentifier" required>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<textarea class="form-control" rows="2" id="editRemark" placeholder="Примечание" aria-label="Примечание"
+												 name="remark"></textarea>
+											</div>
+										</div>
 									</div>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-12">
-									<div class="form-group">
-										<textarea class="form-control" rows="2" id="inputRemark" placeholder="Примечание" aria-label="Примечание"></textarea>
+									<div class="row">
+										<div class="col-md-12 mb-4">
+											<small class="text-muted">После нажатия на кнопку "Сохранить данные" введенная информация будет передана для
+												дальнейшей обработки</small>
+										</div>
 									</div>
-								</div>
+									<div class="row">
+										<div class="col-md-12 mb-3 text-right">
+											<button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+											<button class="btn btn-info" id="editIdentifierBtn" type="submit" data-doc_id="{{doc.id}}">Сохранить
+												данные</button>
+										</div>
+									</div>
+								</form>
 							</div>
-							<div class="row">
-								<div class="col-md-12 mb-4">
-									<small class="text-muted">После нажатия на кнопку "Сохранить данные" введенная информация будет передана для
-										дальнейшей обработки</small>
-								</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Modal for identifier adding -->
+			<div class="modal fade" id="addIdentifierModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title ml-3" id="modalLabel">Добавление идентификатора</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container-fluid">
+								<form role="form" id="inputIdentifierForm">
+									<div class="row">
+										<div class="col-md-5">
+											<div class="form-group">
+												<label for="inputFeature">Признак</label>
+												<select class="form-control feature" id="inputFeature" name="feature" autofocus required>
+													<option value="">Выберите признак</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-7">
+											<div class="form-group">
+												<label for="inputIdentifier">Идентификатор</label>
+												<input type="text" class="form-control" id="inputIdentifier" name="identifier" required>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<textarea class="form-control" rows="2" id="inputRemark" name="remark" placeholder="Примечание" aria-label="Примечание"></textarea>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12 mb-4">
+											<small class="text-muted">После нажатия на кнопку "Сохранить данные" введенная информация будет передана для
+												дальнейшей обработки</small>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12 mb-3 text-right">
+											<button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+											<button class="btn btn-info" id="addIdentifierBtn" type="submit" data-doc_id="{{doc.id}}">Сохранить
+												данные</button>
+										</div>
+									</div>
+								</form>
 							</div>
-							<div class="row">
-								<div class="col-md-12 mb-3 text-right">
-									<button class="btn btn-info" id="add-identifier-btn" type="submit" data-doc_id="{{doc.id}}">Сохранить
-										данные</button>
-								</div>
-							</div>
-						</form>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </main>
+<script src="/javascripts/docs/options/articles_list.js"></script>
+<script src="/javascripts/docs/options/decisions_list.js"></script>
+<script src="/javascripts/docs/options/phase_list.js"></script>
 <script src="/javascripts/docs/options/features_list.js"></script>
-<script src="/javascripts/docs/info.js"></script>
+<script src="/javascripts/docs/info/info.js"></script>
+<script src="/javascripts/docs/info/editRecordModal.js"></script>
+<script src="/javascripts/docs/info/editIdentifierModal.js"></script>
+<script src="/javascripts/docs/info/addIdentifierModal.js"></script>
 
 {{!-- {{#if can_remove_doc}}
 <div>
@@ -155,7 +344,16 @@
 {{/if}} --}}
 
 
-{{!--
-<script src="/javascripts/docs/info.js"></script> --}}
+{{!-- <tr>
+	<td colspan="2">
+		<span class="h6">{{this.feature}}:</span>
+		&ensp;{{this.identifier}}
+		{{#if this.remark}}
+		&ensp;({{this.remark}})
+		{{/if}}
+	</td>
+</tr> --}}
+
+
 {{!--
 <script src="/javascripts/form/load_users.js"></script> --}}

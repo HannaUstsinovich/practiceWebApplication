@@ -1,47 +1,40 @@
 <main role="main">
-	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap pt-3">
 		<div class="col-md-9 order-md-1">
 			<h4 class="mb-4">Добавление новой записи</h4>
 			<form role="form" id="inputForm">
 				<div class="form-group row">
 					<div class="col-md-6 mb-3">
-						<label for="firstName">Сотрудник</label>
+						<label for="firstName">Сотрудник *</label>
 						<input type="text" class="form-control" id="firstName" name="employee" placeholder="ФИО сотрудника" value="{{user.fullname}}"
 						 required readonly>
 					</div>
 					<div class="col-md-6 mb-3">
-						<label for="service">Орган внутренних дел</label>
-						<select class="form-control" id="service" name="service" required>
-							<option value="">Выбор ОВД...</option>
-							<option>Брестский ОВДТ</option>
-							<option>Служба2</option>
-							<option>Служба3</option>
-							<option>Служба4</option>
-							<option>Служба5</option>
-						</select>
+						<label for="service">Орган внутренних дел *</label>
+						<input class="form-control" id="service" name="service" value="{{user.department}}" required readonly>
 					</div>
 				</div>
 
 				<div class="form-group row">
 					<div class="col-md-4 mb-3">
-						<label for="book-number">Номер ЕК</label>
+						<label for="book-number">Номер ЕК *</label>
 						<input type="number" min="1" class="form-control" id="book-number" name="book_number" required>
 					</div>
 					<div class="col-md-4 mb-3">
-						<label for="registrationDate">Дата регистрации</label>
+						<label for="registrationDate">Дата регистрации *</label>
 						<input type="date" class="form-control registrationDate" id="registrationDate" name="registration_date" required>
 
 					</div>
 					<div class="col-md-4 mb-3">
-						<label for="cc_article">Статья УК</label>
-						<select class="custom-select d-md-block w-100" id="cc_article" name="cc_article" required>
+						<label for="cc_article">Статья УК *</label>
+						<select class="form-control" id="cc_article" name="cc_article" required>
 							<option value="">Выберите статью...</option>
 						</select>
 					</div>
 				</div>
 
 				<div class="form-group">
-					<label for="description">Фабула</label>
+					<label for="description">Фабула *</label>
 					<!-- <input type="text" class="form-control" id="description" placeholder="Описание" value="" required> -->
 					<textarea class="form-control" rows="6" id="description" name="description" placeholder="Введите описание" value=""
 					 required aria-label="Описание"></textarea>
@@ -60,7 +53,7 @@
 				<div class="form-group row">
 					<div class="col-md-8 mb-3">
 						<label for="phase">Состояние</label>
-						<select class="custom-select d-md-block" id="phase" name="phase">
+						<select class="form-control" id="phase" name="phase">
 							<option value="">Выберите состояние...</option>
 						</select>
 					</div>
@@ -75,14 +68,14 @@
 
 				<div class="form-group row">
 					<div class="col-md-8 mb-3">
-						<label for="decision">Решение по делу</label>
-						<select class="custom-select d-md-block" id="decision" name="decision" required>
+						<label for="decision">Решение по делу *</label>
+						<select class="form-control" id="decision" name="decision" required>
 							<option value="">Выберите решение...</option>
 						</select>
 					</div>
 					<div class="col-md-4 mb-3">
-						<label for="date3">Дата</label>
-						<input type="date" class="form-control" id="date3" name="decision_date" placeholder="" required>
+						<label for="decisionDate">Дата *</label>
+						<input type="date" class="form-control" id="decisionDate" name="decision_date" placeholder="" required>
 					</div>
 				</div>
 
@@ -93,7 +86,7 @@
 							<span class="h4">Идентификатор:</span>
 						</div>
 						<div class="col-md-9 mb-3">
-							<button class="btn btn-secondary btn-sm d-flex" id="addIdentifiersBtn" type="button" value='Добавление'>
+							<button class="btn btn-secondary btn-sm d-flex" id="showIdFieldsBtn" type="button" value='Добавление'>
 								Добавить
 							</button>
 						</div>

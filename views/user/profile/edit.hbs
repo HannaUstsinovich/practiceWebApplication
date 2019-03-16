@@ -1,0 +1,48 @@
+<main role="main">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap pt-3">
+		<div class="col-md-9 order-md-1">
+			<h4 class="mb-3">
+				{{userInfo.fullname}}
+				<small class="text-muted">
+					(редактирование профиля)
+				</small>
+			</h4>
+			<form role="form" id="editProfileForm">
+				<input type="hidden" name="id" value="{{userInfo.id}}" />
+				<div class="form-group">
+					<label for="department">Фамилия, Имя, Отчество</label>
+					<input class="form-control" id="fullname" name="fullname" value="{{userInfo.fullname}}" type="text" required>
+				</div>
+
+				<div class="form-group">
+					<label for="department">Орган внутренних дел *</label>
+					<select class="form-control" id="department" name="department" data-department_option="{{userInfo.department}}"
+					 required>
+						<option value="">Выберите ОВД...</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label>Должность</label>
+					<input class="form-control" name="position" value="{{userInfo.position}}" type="text">
+				</div>
+				<div class="form-group">
+					<label>Email</label>
+					<input class="form-control" name="email" value="{{userInfo.email}}" type="email">
+				</div>
+				<div class="form-group">
+					<label>Телефон</label>
+					<input class="form-control" name="phone" value="{{userInfo.phone}}" type="text">
+				</div>
+				<div class="form-group row pt-3">
+					<div class="col-md-6">
+						<button class="btn btn-info btn-block" id="editUserBtn" data-user_id="{{userInfo.id}}" type="submit">Сохранить</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</main>
+
+<script src="/javascripts/docs/options/departments_list.js"></script>
+<script src="/javascripts/user/edit.js"></script>

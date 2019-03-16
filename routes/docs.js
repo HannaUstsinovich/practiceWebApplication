@@ -1,6 +1,6 @@
 /**
- * Имя: роуты для урлов начинающихся с /docs
- */
+* Имя: роуты для урлов начинающихся с /docs
+*/
 
 var express = require('express');
 var router = express.Router();
@@ -58,14 +58,17 @@ router.post('/new', function (req, res) {
 					//Блок для добавления идентификатора
 					fields.record_id = savedDocParams.record_id;
 					saveIdentifier(fields, req, res, function (savedIdentifierParams) {
-						if (savedIdentifierParams.success)
+						if (savedIdentifierParams.success) {
+							res.setHeader('Content-Type', 'application/json');
 							res.end(JSON.stringify(savedIdentifierParams));
+						}
 						return;
 						// 	res.render('docs/saved_record', savedDocParams);
 						// return;
 					})
 				}
 				else {
+					res.setHeader('Content-Type', 'application/json');
 					res.end(JSON.stringify(savedDocParams));
 					return;
 				}
@@ -79,8 +82,8 @@ router.get('/new/', function (req, res) {
 	renderForm(req, res);
 })
 
-
 var renderForm = function (req, res) {
+	// console.log(req.user.admin)
 	if (!user.can(req.user.admin, "add_doc")) {
 		res.sendStatus(403);
 		return;
@@ -210,14 +213,14 @@ router.get('/identifiers', function (req, res) {
 })
 
 // Добавление идентификатора
-router.post('/:id/info', function (req, res) {
+router.post('/:id/info/add/identifier', function (req, res) {
 	cache.flushAll();
 	var form = new formidable.IncomingForm();
 	var record_id = req.params.id;
 
 	form.multiples = true;
 
-	form.parse(req, function (err, fields, files) {
+	form.parse(req, function (err, fields) {
 		for (var key in fields) {
 			if (fields.hasOwnProperty(key)) {
 				fields[key] = "'" + fields[key] + "'";
@@ -227,6 +230,7 @@ router.post('/:id/info', function (req, res) {
 		fields.record_id = record_id;
 
 		saveIdentifier(fields, req, res, function (savedIdentifierParams) {
+			res.setHeader('Content-Type', 'application/json');
 			res.end(JSON.stringify(savedIdentifierParams));
 			return;
 		});
@@ -234,7 +238,6 @@ router.post('/:id/info', function (req, res) {
 })
 
 var saveIdentifier = function (fields, req, res, callback) {
-
 	model.addIdentifier(fields, function (rows) {
 
 		var params = {}
@@ -300,87 +303,17 @@ var saveIdentifier = function (fields, req, res, callback) {
 //     })
 // })
 
-
-// router.post("/ids", function (req, res) {
-//     var cleanIdsSource = req.body.clean ? req.body.clean.split(",") : [];
-//     var errorIdsSource = req.body.error ? req.body.error.split(",") : [];
-
-//     displayDocsByIds(req, res, cleanIdsSource, errorIdsSource);
-// })
-
-
-// router.get("/ids", function (req, res) {
-//     var url_parts = url.parse(req.url, true);
-//     var cleanIdsSource = url_parts.query.clean ? url_parts.query.clean.split(",") : [];
-//     var errorIdsSource = url_parts.query.error ? url_parts.query.error.split(",") : [];
-
-//     displayDocsByIds(req, res, cleanIdsSource, errorIdsSource);
-// })
-
-// function displayDocsByIds(req, res, cleanIdsSource, errorIdsSource) {
-//     var unitedIds = [];
-//     cleanIdsSource.forEach(function (recordId) {
-//         unitedIds.push({type: "clean", id: recordId})
-//     })
-//     errorIdsSource.forEach(function (recordId) {
-//         unitedIds.push({type: "error", id: recordId})
-//     })
-
-//     var cleanIdsParam = [];
-//     var errorIdsParam = [];
-//     paginate.slice(req)(unitedIds).forEach(function (docObject) {
-
-//         if (docObject.type == "clean") {
-//             cleanIdsParam.push(docObject.id);
-//         }
-//         if (docObject.type == "error") {
-//             errorIdsParam.push(docObject.id);
-//         }
-//     })
-
-//     promise.all([
-//             cleanIdsParam.length ? model.getDocsClean({doc_id: cleanIdsParam}) : [],
-//             errorIdsParam.length ? model.getDocs({doc_id: errorIdsParam}) : []
-//         ]
-//     ).then(function (result) {
-//         var userModule = new UserModule();
-//         userModule.setId(req.user.id);
-
-//         var cleanDocs = result[0];
-//         var errorDocs = result[1];
-
-//         var renderParams = {
-//             docs: cleanDocs.concat(errorDocs),
-//             pages: paginate.getPages(req, res)(unitedIds.length),
-//             user: req.user,
-//             showIds: false,
-//             postPage: true,
-//             cleanIdsSource: cleanIdsSource,
-//             errorIdsSource: errorIdsSource
-//         }
-
-//         if (url.parse(req.url, true)['query']['hide'] == "true") {
-//             renderParams.layout = false;
-//         }
-
-//         res.render('docs/list/all', renderParams);
-//     })
-// }
-
 // Отобразить документ полностью
-router.get('/:id/:action?', function (req, res) {
+router.get('/:id/info', function (req, res) {
 	var params = {};
-	var render = req.params.action == 'edit' ? 'docs/edit' : 'docs/info';
+	var render = 'docs/info';
 
 	params.doc_id = req.params.id;
-	// params.active_only = true;
 
-	Promise.all([
-		model.getDocs(params),
-	]).then(function (result) {
-		var doc = result[0][0];
+	model.getRecordInfo(params).then(function (result) {
+		var doc = result[0];
 
-		if (result[0][0].feature != null && result[0][0].feature != undefined) {
+		if (result[0].feature != null && result[0].feature != undefined) {
 			var identifiers = getIdentifiersObject(result);
 			delete doc.feature;
 			delete doc.identifier;
@@ -396,7 +329,7 @@ router.get('/:id/:action?', function (req, res) {
 			doc: doc,
 			identifiers: identifiers,
 			user: req.user,
-			can_add_identifier: canAddIdentifier(doc, req)
+			can_edit_record: canEditRecord(doc, req)
 			// can_edit_doc: user.can(req.user.admin, "edit_doc"),
 			// can_remove_doc: canRemoveDoc(doc, req),
 		}
@@ -408,16 +341,108 @@ router.get('/:id/:action?', function (req, res) {
 function getIdentifiersObject(obj) {
 	var identifiers = {}
 
-	for (var k = 0; k < obj[0].length; k++) {
+	for (var k = 0; k < obj.length; k++) {
 		var temp = {}
-		Object.keys(obj[0][k]).forEach(function (key) {
-			if (key == "feature" || key == "identifier" || key == "remark")
-				temp[key] = obj[0][k][key];
+		Object.keys(obj[k]).forEach(function (key) {
+			if (key == "identifierId" || key == "feature" || key == "identifier" || key == "remark")
+				temp[key] = obj[k][key];
 		});
 		identifiers[k] = temp;
 	}
 	return identifiers;
 }
+
+//ОБНОВЛЕНИЕ ДОКУМЕНТА
+// router.post('/:doc_id/update', function (req, res) {
+//     cache.flushAll();
+
+//     if (!user.can(req.user.admin, "edit_doc")) {
+//         res.sendStatus(403);
+//         return;
+//     }
+
+//     var params = req.body;
+//     params.id = req.params.doc_id;
+//     params.table = 'docs_' + req.params.type;
+//     model.updateDoc(params).then(function (rows) {
+//         res.setHeader('Content-Type', 'application/json');
+//         res.send(JSON.stringify({
+//             affected_rows: rows.affectedRows
+//         }));
+//     })
+// })
+
+router.put('/:id/edit', function (req, res) {
+
+	cache.flushAll();
+	var form = new formidable.IncomingForm();
+
+	var doc_id = req.params.id;
+
+	if (!user.can(req.user.admin, "edit_own_record") && !user.can(req.user.admin, "edit_any_record")) {
+		res.sendStatus(403);
+		return;
+	}
+
+	form.multiples = true;
+
+	form.parse(req, function (err, fields) {
+		fields.doc_id = doc_id;
+
+		model.updateRecord(fields, function (rows) {
+			var params = {
+				// user: req.user,
+			}
+			if (rows.affectedRows == 1) {
+				params.success = true;
+			}
+			else {
+				params.success = false;
+			}
+
+			res.setHeader('Content-Type', 'application/json');
+			res.end(JSON.stringify(params));
+			return;
+		})
+	});
+})
+
+router.put('/:doc_id/edit/:ident_id/identifier', function (req, res) {
+
+	cache.flushAll();
+	var form = new formidable.IncomingForm();
+
+	var doc_id = req.params.doc_id;
+	var ident_id = req.params.ident_id;
+
+	if (!user.can(req.user.admin, "edit_own_record") && !user.can(req.user.admin, "edit_any_record")) {
+		res.sendStatus(403);
+		return;
+	}
+
+	form.multiples = true;
+
+	form.parse(req, function (err, fields) {
+		fields.doc_id = doc_id;
+		fields.ident_id = ident_id;
+
+		model.updateIdentifier(fields, function (rows) {
+			var params = {
+				user: req.user,
+			}
+			if (rows.affectedRows == 1) {
+				params.success = true;
+			}
+			else {
+				params.success = false;
+			}
+
+			res.setHeader('Content-Type', 'application/json');
+			res.end(JSON.stringify(params));
+			return;
+		})
+	});
+})
 
 // router.get('/:id/:action?', function (req, res) {
 //     var params = {};
@@ -522,12 +547,12 @@ function getIdentifiersObject(obj) {
  * @param doc
  * @returns {boolean}
  */
-var canAddIdentifier = function (doc, req) {
-	if (doc.user_id == req.user.id && user.can(req.user.admin, "add_own_identifier")) {
+var canEditRecord = function (doc, req) {
+	if (doc.user_id == req.user.id && user.can(req.user.admin, "edit_own_record")) {
 		return true;
 	}
 
-	if (user.can(req.user.admin, "add_any_identifier")) {
+	if (user.can(req.user.admin, "edit_any_record")) {
 		return true;
 	}
 

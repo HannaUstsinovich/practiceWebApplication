@@ -1,5 +1,6 @@
+<link rel="stylesheet" href="/styles/docs/tables.css">
 <main role="main" class="col-md-12">
-	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
 		<h4>Список всех идентификаторов</h4>
 		<div class="btn-toolbar mb-2 mb-md-0 ml-auto">
 			<div class="btn-group">
@@ -15,16 +16,16 @@
 		<table class="table table-striped table-bordered table-hover text-center" style="width:100%" id="identifiers-table">
 			<thead>
 				<tr class="text-center" role="row">
-					<th scope="col">№</th>
-					<th scope="col">Признак</th>
-					<th scope="col">Идентификатор</th>
-					<th scope="col">Примечание</th>
+					<th scope="col" style="width:8%">№</th>
+					<th scope="col" style="width:23%">Признак</th>
+					<th scope="col" style="width:32%">Идентификатор</th>
+					<th scope="col" style="width:37%">Примечание</th>
 				</tr>
 			</thead>
 			<tbody>
 				{{#each identifiers}}
 				<tr role="row" data-target="table-info" data-href="/docs/{{this.record_id}}/info">
-					<td class="tableRowNum">{{../paginate.start}}</td>
+					<td nowrap="true" class="tableRowNum">{{../paginate.start}}</td>
 					<td>{{this.feature}}</td>
 					<td>{{this.identifier}}</td>
 					<td>{{this.remark}}</td>
@@ -42,4 +43,3 @@
 <script src="/javascripts/docs/list/all_identifiers.js"></script>
 <script src="/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="/simplePagination.js/jquery.simplePagination.js"></script>

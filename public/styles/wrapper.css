@@ -70,7 +70,7 @@ input[type=number]::-webkit-inner-spin-button {
 	right: 0;
 	bottom: 0;
 	width: calc(100% - 90px);
-	height: 70px;
+	height: 50px;
 	background-color: #006064;
 	/* background-color: rgb(217, 224, 230); */
 	/* background-color: #e0f7fa; */
@@ -80,11 +80,10 @@ input[type=number]::-webkit-inner-spin-button {
   }
   
   footer.sticky-footer .copyright {
-	line-height: 1;
-	font-size: 1.2rem;
+	margin-top: 1%;
+	/* line-height: 1rem; */
+	font-size: 1rem;
 	color: #e0dfdf;
-	/* color:#414141; */
-	/* font-weight: bold; */
   }
 
 @media (min-width: 768px) {
@@ -95,11 +94,9 @@ input[type=number]::-webkit-inner-spin-button {
   
   .sidebar {
 	width: 90px !important;
+	
 	background-color: #ECEFF1;
-	/* font-size: 16px; */
 	font-weight: bold;	
-	/* background-color: rgb(235, 235, 235); */
-	/* background-color: #e0f7fa; */
 	min-height: calc(100vh - 56px);
 	z-index: 100;
 

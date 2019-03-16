@@ -1,0 +1,21 @@
+th {
+	text-align: right;
+}
+
+.edit-icon,
+.edit-icon-id {
+	cursor: pointer;
+	color: #868686;
+}
+
+.show-edit-state span,
+.hide-edit-state span{
+	cursor: pointer;
+	color: #525252;
+	font-size: 18px;
+	font-weight: bold;
+}
+.show-edit-state span:hover,
+.hide-edit-state span:hover{
+	color:blue;
+}

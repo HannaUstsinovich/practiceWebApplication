@@ -29,11 +29,10 @@ DEBUG("orpsvt v%s", package.app_version)
 var app = express();
 
 var age = 3600;
-app.use(express.static(path.join(__dirname, '/public'), {maxAge: age})); //----------
-app.use(express.static(path.join(__dirname, '/node_modules/bootstrap/dist'), {maxAge: age})); //----------
-app.use(express.static(path.join(__dirname, '/node_modules/jquery/dist'), {maxAge: age})); //----------
-app.use(express.static(path.join(__dirname, '/node_modules'), {maxAge: age})); //----------
-app.use(express.static(path.join(__dirname, '/bower'), {maxAge: age})); //----------
+app.use(express.static(path.join(__dirname, '/public'), {maxAge: age}));
+app.use(express.static(path.join(__dirname, '/node_modules/bootstrap/dist'), {maxAge: age}));
+app.use(express.static(path.join(__dirname, '/node_modules/jquery/dist'), {maxAge: age}));
+app.use(express.static(path.join(__dirname, '/node_modules'), {maxAge: age}));
 
 app.use(compression());
 

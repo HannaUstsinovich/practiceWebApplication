@@ -1,5 +1,6 @@
+<link rel="stylesheet" href="/styles/docs/tables.css">
 <main role="main" class="col-md-12">
-	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
 		<h4>Список моих записей</h4>
 		<div class="btn-toolbar mb-2 mb-md-0 ml-auto">
 			<div class="btn-group">
@@ -14,19 +15,19 @@
 		<table class="table table-striped table-bordered table-hover" style="width:100%" id="user-records-table">
 			<thead>
 				<tr class="text-center" role="row">
-					<th style="width: 6%" scope="col">№</th>
+					<th style="width: 8%" scope="col">№</th>
 					<th style="width: 11%" scope="col">ЕК</th>
 					<th style="width: 12%" scope="col">Статья УК</th>
-					<th style="width: 11%" scope="col">Дата регистрации</th>
-					<th style="width: 42%" scope="col">Фабула</th>
+					<th style="width: 10%" scope="col">Дата</th>
+					<th style="width: 41%" scope="col">Фабула</th>
 					<th style="width: 17%" scope="col">ОВД</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody style="font-size: 14px">
 				{{#each records}}
 				<tr role="row" data-target="table-info" data-href="/docs/{{this.id}}/info">
-					<td class="tableRowNum text-center">{{../paginate.start}}</td>
-					<td class="text-center">{{this.book_number}}</td>
+					<td class="tableRowNum text-center" nowrap="true">{{../paginate.start}}</td>
+					<td class="text-center" nowrap="true">{{this.book_number}}</td>
 					<td class="text-center">{{this.cc_article}}</td>
 					<td class="text-center">{{this.registration_date}}</td>
 					<td class="description-size text-left">{{this.description}}</td>
@@ -45,4 +46,3 @@
 <script src="/javascripts/docs/list/user_records.js"></script>
 <script src="/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="/simplePagination.js/jquery.simplePagination.js"></script>

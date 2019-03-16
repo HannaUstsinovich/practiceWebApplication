@@ -2,29 +2,34 @@
 	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">
 		<div class="col-md-9 order-md-1">
 			<h4 class="mb-3">Настройки пользователя</h4>
-			<div class="row settings-options">
+			<div class="settings-options">
 				{{#if canAddUsers}}
-				<div class="col-md-12 mb-4">
-					<a href="/settings/user/add" class="text-primary" name="add-user">
-						<i class="fa fa-user-plus fa-fw fa-lg" aria-hidden="true"></i>
-						<strong class="h5">&nbsp;Добавить пользователя</strong>
-					</a>
+				<div class="row">
+					<div class="col-md-12 mb-4">
+						<a href="/settings/user/add" class="text-primary" name="add-user">
+							<h5><i class="fa fa-user-plus fa-fw fa-lg" aria-hidden="true"></i>
+								&nbsp;Добавить пользователя</h5>
+						</a>
+					</div>
 				</div>
 				{{/if}}
 				{{#if canEditUsers}}
-				<div class="col-md-12 mb-4">
-					<a href="/settings/users/list" class="text-primary" name="edit-users">
-						<i class="fa fa-list fa-fw fa-lg" aria-hidden="true"></i>
-						<strong class="h5">&nbsp;Редактировать пользователей</strong>
-					</a>
+				<div class="row">
+					<div class="col-md-12 mb-4">
+						<a href="/settings/users/list" class="text-primary" name="edit-users">
+							<h5><i class="fa fa-list fa-fw fa-lg" aria-hidden="true"></i>
+								&nbsp;Редактировать пользователей</h5>
+						</a>
+					</div>
 				</div>
 				{{/if}}
-				<div class="col-md-12 mb-4">
-					<a href="#" class="text-primary" name="change-password">
-						<i class="fa fa-eye fa-fw fa-lg" aria-hidden="true"></i>
-						<strong class="h5">&nbsp;Сменить пароль</strong>
-					</a>
-
+				<div class="row">
+					<div class="col-md-12 mb-4">
+						<a href="/settings/user/change_password" class="text-primary" name="change-password">
+							<h5><i class="fa fa-lock fa-fw fa-lg" aria-hidden="true"></i>
+								&nbsp;Сменить пароль</h5>
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>

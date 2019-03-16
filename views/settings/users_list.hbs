@@ -1,0 +1,35 @@
+<main role="main" class="pt-3">
+	<div class="d-flex justify-content-center flex-wrap">
+		<div class="col-md-12 order-md-1">
+			<h4 class="ml-1">Список пользователей</h4>
+			<div class="table-responsive pt-1">
+				<table id="usersListTable" class="table table-hover table-bordered table-condensed cursor-pointer" style="width:100%">
+					<thead class="thead-light">
+						<th>Имя сотрудника</th>
+						<th>Орган внутренних дел</th>
+						<th></th>
+					</thead>
+					<tbody style="font-size: 15px;">
+						{{#each users}}
+						<tr>
+							<td style="width: 37%"><a href="/user/{{this.id}}/profile" style="color: black">
+									{{this.fullname}}
+								</a>
+							</td>
+							<td style="width: 43%">{{this.department}}</td>
+							<td class="text-center" nowrap="true" style="width: 20%"><a href="/settings/user/{{this.id}}/change_password">
+									<i class="fa fa-lock fa-fw fa-lg" aria-hidden="true"></i>
+									Сменить пароль
+								</a>
+							</td>
+						</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</main>
+<script src="/javascripts/settings/users_list.js"></script>
+<script src="/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
